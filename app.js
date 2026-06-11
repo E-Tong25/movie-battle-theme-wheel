@@ -132,7 +132,39 @@ function drawWheel() {
 }
 
 function spin() {
-    if (isSpinning || runtimeChoices.length <= 1) return;
+    if (isSpinning) return;
+
+    // --- GRAND FINALE EDGE CASE ---
+    if (runtimeChoices.length === 1) {
+        lastWinningIndex = 0;
+        UI.result.innerText = `🏆 The Ultimate Winner is ${runtimeChoices[0]}! 🏆`;
+
+        // Instant Audio Call
+        const activeTheme = themePipeline[currentThemeIndex];
+        if (activeTheme && activeTheme.winSound) {
+            const dynamicWinSound = new Audio(activeTheme.winSound);
+            dynamicWinSound.play().catch(() => {});
+        } else if (typeof playSelectionSound === 'function') {
+            playSelectionSound('arcade_levelup');
+        }
+
+        // Massive celebration blast
+        confetti({ particleCount: 250, spread: 100, origin: { y: 0.6 } });
+
+        setTimeout(() => {
+            UI.winner.innerText = `🏆 Grand Winner: ${runtimeChoices[0]}! 🏆`;
+            const confirmBtn = document.getElementById('eliminateBtn');
+            if (confirmBtn) confirmBtn.innerText = "Reset Wheel";
+            UI.modal.style.display = "flex";
+        }, 600);
+
+        return;
+    }
+
+    if (runtimeChoices.length === 0) return;
+
+    // Force-unlock browser context for sound
+    new Audio().play().catch(() => {});
 
     isSpinning = true;
     let tickCount = 0; // Local counter to track how many segments pass the pointer
@@ -167,7 +199,7 @@ function spin() {
                 lastTargetIndex = segmentTrackIndex;
 
                 // 1. Play audio click
-                playTickSound();
+                if (typeof playTickSound === 'function') playTickSound();
 
                 // 2. CHECK IF THE DIMENSION SHIFT TOGGLE IS ON
                 if (UI.shift.checked) {
@@ -213,16 +245,13 @@ function calculateWinner() {
     UI.result.innerText = `🎉 ${winnerText}! 🎉`;
 
     // --- DYNAMIC THEME AUDIO ENGINE ---
-    // 1. Get the active theme based on where the index left off
     const activeTheme = themePipeline[currentThemeIndex];
 
     if (activeTheme && activeTheme.winSound) {
-        // 2. Create a temporary Audio object using the theme's specific sound file
         const dynamicWinSound = new Audio(activeTheme.winSound);
         dynamicWinSound.currentTime = 0;
         dynamicWinSound.play().catch(err => console.log("Audio playback blocked by browser."));
-    } else {
-        // Fallback sound just in case a theme config is missing its sound
+    } else if (typeof playSelectionSound === 'function') {
         playSelectionSound('arcade_levelup');
     }
 
@@ -231,6 +260,13 @@ function calculateWinner() {
 
     setTimeout(() => {
         UI.winner.innerText = `🎉 Winner: ${winnerText}! 🎉`;
+
+        // Dynamically label the action button depending on options left
+        const confirmBtn = document.getElementById('eliminateBtn');
+        if (confirmBtn) {
+            confirmBtn.innerText = (runtimeChoices.length === 1) ? "Reset Wheel" : "HELL YA";
+        }
+
         UI.modal.style.display = "flex";
     }, 1200);
 }
@@ -253,6 +289,9 @@ function eliminateOption() {
     if (lastWinningIndex > -1) {
         runtimeChoices.splice(lastWinningIndex, 1);
         lastWinningIndex = -1;
+        setupWheel();
+    } else if (runtimeChoices.length === 0) {
+        // Fallback safety catch: If they hit reset on an empty array layout
         setupWheel();
     }
     closeModal();
