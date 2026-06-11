@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&display=swap');
+
+/* --- CINEMATIC MOVIE SPOTLIGHT ENGINE --- */
+.spotlight {
+    position: fixed; bottom: 0; width: 400px; height: 100vh;
+    background: conic-gradient(from 0deg at 50% 100%, rgba(128,0,0,0) 165deg, rgba(128,0,0,0.15) 180deg, rgba(128,0,0,0) 195deg);
+    filter: blur(30px); mix-blend-mode: multiply; z-index: -1; pointer-events: none;
+}
+.light-left { left: 15%; animation: movieSwingLeft 7s ease-in-out infinite alternate; }
+.light-right { right: 15%; animation: movieSwingRight 8s ease-in-out infinite alternate; }
+@keyframes movieSwingLeft { 0% { transform: rotate(-12deg); } 100% { transform: rotate(12deg); } }
+@keyframes movieSwingRight { 0% { transform: rotate(12deg); } 100% { transform: rotate(-12deg); } }
+
+body {
+    font-family: 'Special Elite', monospace; /* Grungy typewriter body font */
+    background: radial-gradient(circle, #1a0000 0%, #050000 100%); /* Deep blood/black void */
+    color: #800000; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; overflow: hidden;
+}
+
+.controls-panel {
+    position: absolute; top: 20px; right: 20px; background: rgba(5,0,0,0.85);
+    border: 1px dashed #800000; padding: 10px; font-size: 12px; letter-spacing: 1px;
+}
+.switch { position: relative; display: inline-block; width: 44px; height: 22px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #222; }
+.toggle-slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: #800000; }
+input:checked + .toggle-slider { background-color: #4a0000; }
+input:checked + .toggle-slider:before { transform: translateX(22px); background-color: #ff0000; }
+
+h1 {
+    font-family: 'Creepster', system-ui; /* Jagged horror title font */
+    margin-bottom: 5px; color: #ff0000; font-size: 36px; letter-spacing: 2px;
+    text-shadow: 0 0 8px #800000, 2px 2px 4px #000; text-align: center;
+}
+
+.container { display: flex; flex-direction: column; align-items: center; gap: 25px; }
+.wheel-container { position: relative; width: 360px; height: 360px; margin-top: 20px; }
+.pointer {
+    position: absolute; top: -18px; left: 50%; margin-left: -15px; width: 0; height: 0;
+    border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #ff0000;
+    z-index: 10; filter: drop-shadow(0 0 8px #ff0000); transition: transform 0.08s ease;
+}
+.pointer.tick { transform: rotate(-25deg) scaleY(1.1); }
+
+canvas { border-radius: 50%; box-shadow: 0 0 30px #000, 0 0 15px #4a0000; border: 2px solid #800000; }
+
+button {
+    background: #4a0000; color: #ff0000; border: 1px solid #800000; padding: 12px 50px;
+    font-size: 20px; font-family: 'Creepster', system-ui; letter-spacing: 1px; cursor: pointer; transition: 0.2s;
+}
+button:hover { background: #800000; color: #fff; box-shadow: 0 0 15px #ff0000; }
+button:disabled { background: #111; color: #333; border-color: #222; cursor: not-allowed; }
+
+#result { font-family: 'Creepster', system-ui; font-size: 28px; color: #ff0000; text-shadow: 0 0 5px #000; text-align: center; }
+
+.modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); justify-content: center; align-items: center; }
+.modal-content { background: #0d0d0d; border: 1px solid #800000; padding: 30px; text-align: center; max-width: 400px; width: 80%; box-shadow: 0 0 25px #4a0000; }
+.modal-content h2 { font-family: 'Creepster', system-ui; color: #ff0000; font-size: 28px; }
+.modal-btns { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+.modal-btn { padding: 10px 25px; border: 1px solid #800000; font-family: 'Special Elite', monospace; cursor: pointer; }
+.btn-remove { background: #4a0000; color: white; }
+.btn-keep { background: transparent; color: #666; }

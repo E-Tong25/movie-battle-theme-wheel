@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcade Edition Spin the Wheel</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <link id="globalTheme" rel="stylesheet" href="theme-cyberpunk.css">
+</head>
+<body>
+
+    <div class="controls-panel">
+        <span>⚡ TURBO SPIN</span>
+        <label class="switch">
+            <input type="checkbox" id="turboToggle">
+            <span class="toggle-slider"></span>
+        </label>
+
+        <span style="margin-left: 15px;">🌌 SHIFT SPIN</span>
+        <label class="switch">
+            <input type="checkbox" id="shiftToggle">
+            <span class="toggle-slider"></span>
+        </label>
+
+        <button id="themeBtn" onclick="toggleGlobalTheme()" style="margin-left: 10px; padding: 4px 12px; font-size: 11px; font-weight: bold; cursor: pointer;">🎬 SWAP THEME</button>
+    </div>
+
+    <div class="spotlight light-left"></div>
+    <div class="spotlight light-right"></div>
+
+    <h1>MOVIE BATTLE THEMES EPIC SPINNER WHEEL THING</h1>
+    <p id="result">SPIN to Choose a Theme!</p>
+
+    <div class="container">
+        <div class="wheel-container">
+            <div id="pointer" class="pointer"></div>
+            <canvas id="wheel" width="360" height="360"></canvas>
+        </div>
+        <button id="spinBtn" onclick="spin()">SPIN</button>
+    </div>
+
+    <div id="eliminationModal" class="modal">
+        <div class="modal-content">
+            <h2 id="modalWinner">🎉 Options Landed! 🎉</h2>
+            <p>Would you like to eliminate this option from the wheel for the next spin?</p>
+            <div class="modal-btns">
+                <button class="modal-btn btn-remove" onclick="eliminateOption()">HELL YA</button>
+                <button class="modal-btn btn-keep" onclick="closeModal()">HELL NO</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="options.js" defer></script>  <script src="audio.js" defer></script>    <script src="app.js" defer></script>      </body>
+</html>

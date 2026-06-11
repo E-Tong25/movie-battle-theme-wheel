@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* --- CINEMATIC ARCADE LIGHTING ENGINE --- */
+.spotlight {
+    position: fixed; bottom: 0; width: 350px; height: 100vh;
+    background: conic-gradient(from 0deg at 50% 100%, rgba(0,255,0,0) 170deg, rgba(0,255,0,0.12) 180deg, rgba(0,255,0,0) 190deg);
+    filter: blur(20px); mix-blend-mode: screen; /* FIXED: Softens lights into natural glowing rays */
+    z-index: -1; pointer-events: none;
+}
+.light-left { left: 20%; animation: movieSwingLeft 4s linear infinite alternate; }
+.light-right { right: 20%; animation: movieSwingRight 4s linear infinite alternate; }
+@keyframes movieSwingLeft { 0% { transform: rotate(-10deg); } 100% { transform: rotate(10deg); } }
+@keyframes movieSwingRight { 0% { transform: rotate(10deg); } 100% { transform: rotate(-10deg); } }
+
+body {
+    font-family: 'Press Start 2P', monospace; background: #050505; color: #00ff00;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; overflow: hidden;
+}
+
+/* --- OVERLAY TOGGLE CONTROLS --- */
+.controls-panel { position: absolute; top: 20px; right: 20px; border: 1px solid #00ff00; padding: 12px; background: #000; font-size: 10px; line-height: 1.5; }
+.switch { position: relative; display: inline-block; width: 44px; height: 22px; vertical-align: middle; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #222; transition: 0.2s; }
+.toggle-slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: #00ff00; transition: 0.2s; }
+
+/* FIXED: Toggle now turns bright matrix green when checked */
+input:checked + .toggle-slider { background-color: #004400; }
+input:checked + .toggle-slider:before { transform: translateX(22px); background-color: #00ff00; }
+
+h1 { color: #00ff00; text-align: center; font-size: 18px; line-height: 1.4; }
+.container { display: flex; flex-direction: column; align-items: center; gap: 25px; }
+.wheel-container { position: relative; width: 360px; height: 360px; margin-top: 20px; }
+
+/* --- WHEEL POINTER MECHANICS --- */
+.pointer {
+    position: absolute; top: -18px; left: 50%; margin-left: -15px; width: 0; height: 0;
+    border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #00ff00;
+    z-index: 10; filter: drop-shadow(0 0 5px #00ff00); transition: transform 0.05s ease;
+}
+.pointer.tick { transform: scaleY(0.7) rotate(-10deg); }
+
+canvas { border-radius: 50%; border: 3px solid #00ff00; background: transparent; box-shadow: 0 0 20px rgba(0, 255, 0, 0.2); }
+
+/* --- RETRO INTERACTION LAYERS --- */
+button {
+    background: #000; color: #00ff00; border: 1px solid #00ff00; padding: 12px 40px;
+    font-size: 14px; font-family: 'Press Start 2P', monospace; font-weight: bold; cursor: pointer; transition: 0.1s; /* FIXED: Pointed to arcade font */
+}
+button:hover { background: #00ff00; color: #000; box-shadow: 0 0 10px #00ff00; }
+button:disabled { background: #111; color: #333; border-color: #333; cursor: not-allowed; box-shadow: none; }
+
+#result { font-size: 14px; color: #00ff00; text-align: center; }
+
+/* --- SYSTEM INTERFACE OVERLAYS --- */
+.modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); justify-content: center; align-items: center; }
+.modal-content { background: #000; border: 2px double #00ff00; padding: 30px; text-align: center; max-width: 450px; width: 80%; }
+.modal-content h2 { margin-top: 0; color: #00ff00; font-size: 16px; }
+.modal-content p { font-size: 11px; line-height: 1.6; }
+.modal-btns { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+.modal-btn { padding: 10px 20px; border: 1px solid #00ff00; background: #000; color: #00ff00; font-family: 'Press Start 2P', monospace; font-size: 11px; cursor: pointer; } /* FIXED: Pointed to arcade font */
+.modal-btn:hover { background: #00ff00; color: #000; }

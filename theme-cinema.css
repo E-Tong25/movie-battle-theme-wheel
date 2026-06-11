@@ -1,0 +1,219 @@
+/* Import a dramatic cinematic movie title font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Forum&display=swap');
+
+/* --- CINEMATIC MOVIE SPOTLIGHT ENGINE --- */
+.spotlight {
+    position: fixed;
+    bottom: 0;
+    width: 400px;
+    height: 100vh;
+    background: conic-gradient(
+        from 0deg at 50% 100%,
+        rgba(212, 175, 55, 0) 165deg,
+        rgba(212, 175, 55, 0.08) 176deg,
+        rgba(212, 175, 55, 0.18) 180deg,
+        rgba(212, 175, 55, 0.08) 184deg,
+        rgba(212, 175, 55, 0) 195deg
+    );
+    filter: blur(25px);
+    mix-blend-mode: screen;
+    z-index: -1;
+    pointer-events: none;
+    transform-origin: 50% 100%;
+    will-change: transform;
+}
+
+.light-left {
+    left: 15%;
+    animation: movieSwingLeft 8s ease-in-out infinite alternate;
+}
+
+.light-right {
+    right: 15%;
+    animation: movieSwingRight 9s ease-in-out infinite alternate;
+}
+
+@keyframes movieSwingLeft {
+    0% { transform: rotate(-15deg); }
+    100% { transform: rotate(12deg); }
+}
+
+@keyframes movieSwingRight {
+    0% { transform: rotate(15deg); }
+    100% { transform: rotate(-12deg); }
+}
+
+body {
+    font-family: 'Forum', serif; /* Elegant reading body text */
+    background: radial-gradient(circle, #221f1f 0%, #110f0f 100%); /* Rich charcoal theater room background */
+    color: #fdf6e2; /* Warm off-white parchment color text */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    overflow: hidden;
+}
+
+.controls-panel {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #1c1c1c;
+    border: 1px solid #d4af37;
+    padding: 8px 16px;
+    border-radius: 0px; /* Classic structural art deco frames */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 22px;
+}
+
+.switch input { opacity: 0; width: 0; height: 0; }
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #444;
+    transition: .3s;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 16px; width: 16px;
+    left: 3px; bottom: 3px;
+    background-color: #d4af37;
+    transition: .3s;
+}
+
+input:checked + .toggle-slider {
+    background-color: #800020;
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(22px);
+    background-color: #fdf6e2;
+}
+
+h1 {
+    font-family: 'Cinzel', serif; /* Applied premium film-header font */
+    margin-bottom: 5px;
+    color: #d4af37; /* Hollywood Gold */
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8), 0 0 10px rgba(212, 175, 55, 0.3);
+    text-align: center;
+    font-size: 24px;
+    letter-spacing: 3px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+}
+
+.wheel-container {
+    position: relative;
+    width: 360px;
+    height: 360px;
+    margin-top: 20px;
+}
+
+.pointer {
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    margin-left: -15px;
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 30px solid #d4af37;
+    z-index: 10;
+    transform-origin: top center;
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.9));
+    transition: transform 0.08s ease;
+}
+
+.pointer.tick { transform: rotate(-22deg); }
+
+canvas {
+    border-radius: 50%;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 0 4px #d4af37; /* Clean golden velvet framing ring */
+}
+
+button {
+    background: #800020; /* Velvet Deep Burgundy Crimson */
+    color: #fdf6e2;
+    border: 1px solid #d4af37;
+    padding: 12px 60px;
+    font-size: 18px;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 2px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #4a0e17;
+    color: #fff;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+}
+
+button:disabled {
+    background: #222;
+    color: #555;
+    border-color: #444;
+    box-shadow: none;
+}
+
+#result {
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    color: #d4af37;
+    letter-spacing: 1px;
+    margin-top: 5px;
+    text-align: center;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.85);
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #1c1c1c;
+    border: 1px solid #d4af37;
+    padding: 35px;
+    border-radius: 0px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.9);
+    max-width: 400px;
+    width: 80%;
+}
+
+.modal-content h2 { font-family: 'Cinzel', serif; margin-top: 0; color: #d4af37; letter-spacing: 1px; }
+.modal-content p { font-size: 18px; }
+.modal-btns { display: flex; justify-content: center; gap: 15px; margin-top: 25px; }
+.modal-btn { padding: 10px 25px; border: 1px solid #d4af37; font-family: 'Cinzel', serif; font-size: 12px; cursor: pointer; }
+.btn-remove { background: #800020; color: white; }
+.btn-keep { background: transparent; color: #aaa; border-color: #444; }
