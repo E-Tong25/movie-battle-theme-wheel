@@ -1,0 +1,694 @@
+/* ==========================================================================
+   BATTLE NIGHT — page styles
+   Uses the per-theme panel colors from side-panels.css (--log-bg, --log-fg,
+   --log-accent, ...) and each theme's own font.
+   ========================================================================== */
+
+/* ---------- On the title card and under the wheel ---------- */
+.modal-content .modal-link {
+    all: unset;
+    display: inline-block;
+    margin-top: 16px;
+    padding: 4px 6px;
+    font: inherit;
+    font-size: 14px;
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+    opacity: 0.85;
+}
+.modal-content .modal-link:hover { opacity: 1; }
+.modal-content .modal-link:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+body.stage .modal-content .modal-link { opacity: 0; animation: stage-fade 0.6s 1.3s ease-out forwards; }
+body[data-theme="fantasy"] .modal-content .modal-link { color: #5a2d8c; }
+
+.bench-row [hidden] { display: none !important; }
+.bench-row .night-bench-btn { border-style: dashed; font-weight: bold; }
+
+/* ---------- Page ---------- */
+.night-page {
+    position: fixed;
+    inset: 0;
+    z-index: 106;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.6);
+    text-align: left;
+}
+.night-page[hidden] { display: none !important; }
+.night-page [hidden] { display: none !important; }
+body.night-open { overflow: hidden; }
+
+.night-sheet {
+    box-sizing: border-box;
+    max-width: 900px;
+    min-height: 100%;
+    margin: 0 auto;
+    padding: calc(22px + env(safe-area-inset-top, 0px)) 28px 0;
+    background: var(--log-bg);
+    color: var(--log-fg);
+    border-left: 1px solid var(--log-border);
+    border-right: 1px solid var(--log-border);
+    display: flex;
+    flex-direction: column;
+    font-size: 15px;
+    line-height: 1.45;
+}
+body[data-theme="arcade"] .night-sheet { font-size: 11px; line-height: 1.8; }
+
+/* Reset the themes' big button styles for everything on this page */
+.night-page button { all: unset; box-sizing: border-box; cursor: pointer; font: inherit; color: inherit; }
+.night-page button:focus-visible { outline: 2px solid var(--log-accent); outline-offset: 2px; }
+.night-page button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.night-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 18px; }
+.night-header h2 { margin: 2px 0 4px; font-size: clamp(26px, 5vw, 44px); line-height: 1.1; color: var(--log-accent); font-weight: normal; }
+.night-header h2:focus { outline: none; }
+body[data-theme="arcade"] .night-header h2 { font-size: clamp(16px, 3.4vw, 26px); line-height: 1.5; }
+.night-players { margin: 0; color: var(--log-muted); }
+.night-page .night-close { font-size: 20px; padding: 6px 10px; border-radius: 6px; }
+.night-page .night-close:hover { background: var(--log-input); }
+
+.night-main { display: flex; flex-direction: column; gap: 16px; flex: 1; padding-bottom: 24px; }
+.night-kicker { margin: 0 0 4px; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--log-muted); }
+body[data-theme="arcade"] .night-kicker { font-size: 9px; }
+.night-intro { margin: 0; color: var(--log-muted); }
+.night-hint { margin: 0; font-size: 13px; color: var(--log-muted); }
+.night-big { margin: 4px 0 8px; font-size: clamp(20px, 3.4vw, 28px); line-height: 1.25; }
+body[data-theme="arcade"] .night-big { font-size: clamp(13px, 2.4vw, 18px); line-height: 1.6; }
+.night-strong { margin: 0; font-size: 17px; }
+.night-ok { color: var(--log-accent); }
+.night-warn { margin: 0; padding: 10px 14px; border: 1px solid #d9a52c; border-radius: 8px; background: rgba(217, 165, 44, 0.12); }
+.night-center { text-align: center; }
+.night-card h3 { margin: 0 0 10px; font-size: 17px; font-weight: normal; }
+
+.night-card {
+    padding: 18px;
+    border: 1px solid var(--log-border);
+    border-radius: 12px;
+    background: var(--log-input);
+}
+
+.night-page .night-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+    border: 1px solid var(--log-border);
+    border-radius: 8px;
+    background: var(--log-input);
+}
+.night-page .night-btn:hover { border-color: var(--log-accent); }
+.night-page .night-btn.primary { background: var(--log-accent); color: var(--log-on-accent); border-color: var(--log-accent); }
+.night-page .night-btn.small { padding: 6px 12px; font-size: 13px; }
+.night-page .night-link { text-decoration: underline; text-underline-offset: 3px; color: var(--log-muted); font-size: 13px; padding: 2px 0; }
+.night-page .night-link:hover { color: var(--log-fg); }
+.night-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.night-actions.center { justify-content: center; }
+
+/* ---------- Scheduling form ---------- */
+.night-form { display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+.night-field { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--log-muted); }
+.night-page input[type="text"],
+.night-page input[type="datetime-local"],
+.night-page textarea {
+    box-sizing: border-box;
+    width: 100%;
+    font: inherit;
+    font-size: 15px;
+    color: var(--log-fg);
+    background: var(--log-bg);
+    border: 1px solid var(--log-border);
+    border-radius: 8px;
+    padding: 10px 12px;
+}
+body[data-theme="arcade"] .night-page input, body[data-theme="arcade"] .night-page textarea { font-size: 11px; }
+.night-page input:focus, .night-page textarea:focus { outline: 2px solid var(--log-accent); outline-offset: 0; }
+.night-page input[type="datetime-local"] { color-scheme: dark; width: auto; }
+body[data-theme="fantasy"] .night-page input[type="datetime-local"] { color-scheme: light; }
+.night-page textarea { resize: vertical; }
+.night-fieldset { margin: 0; padding: 10px 14px; border: 1px solid var(--log-border); border-radius: 8px; display: flex; flex-direction: column; gap: 8px; }
+.night-fieldset legend { padding: 0 4px; font-size: 13px; color: var(--log-muted); }
+.night-radio { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.night-radio input { accent-color: var(--log-accent); }
+.night-page .form-error { margin: 0; min-height: 1em; font-size: 13px; color: #ff6b6b; }
+body[data-theme="fantasy"] .night-page .form-error { color: #a31a1a; }
+
+/* ---------- Countdown ---------- */
+.countdown-card { text-align: center; }
+.big-countdown { display: flex; justify-content: center; gap: clamp(8px, 3vw, 28px); }
+.cd-unit { display: flex; flex-direction: column; align-items: center; min-width: 64px; }
+.cd-num { font-size: clamp(36px, 8vw, 68px); line-height: 1; color: var(--log-accent); font-variant-numeric: tabular-nums; }
+body[data-theme="arcade"] .cd-num { font-size: clamp(20px, 5vw, 40px); }
+.cd-label { margin-top: 6px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--log-muted); }
+.countdown.inline { font-variant-numeric: tabular-nums; }
+
+.night-summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; }
+
+/* ---------- Champions ---------- */
+.champion-row, .clue-row, .judge-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.champion { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.champion.theirs { align-items: center; text-align: center; justify-content: center; }
+/* The other player's champion: a drawn envelope. Open and dashed while they're choosing,
+   closed with a wax seal once they've locked in. */
+.seal {
+    position: relative;
+    width: 64px;
+    height: 44px;
+    border: 2px solid var(--log-accent);
+    border-radius: 4px;
+    background: var(--log-bg);
+    overflow: hidden;
+}
+.seal::before {                               /* the flap */
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: -26px;
+    width: 44px;
+    height: 44px;
+    border: 2px solid var(--log-accent);
+    background: var(--log-input);
+    transform: translateX(-50%) rotate(45deg);
+}
+.seal.is-sealed::after {                      /* the wax seal */
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 12px;
+    width: 14px;
+    height: 14px;
+    margin-left: -7px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #ff8a8a, #b3261e 70%);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+.seal.is-open { border-style: dashed; opacity: 0.6; }
+.seal.is-open::before { top: -44px; }         /* flap lifted: still choosing */
+.seal.is-sealed { animation: night-pulse 2.4s ease-in-out infinite; }
+@keyframes night-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+
+/* ---------- Clues ---------- */
+.clue-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.clue { display: flex; flex-direction: column; gap: 6px; }
+.clue-when { font-size: 12px; color: var(--log-muted); }
+.clue-text { margin: 0; font-style: italic; }
+.clue-text.none { color: var(--log-muted); }
+.clue.is-locked { padding: 10px 12px; border: 1px dashed var(--log-border); border-radius: 8px; }
+.clue-recap { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.clue-list.recap { gap: 6px; font-style: italic; }
+
+/* ---------- Reveal ---------- */
+.reveal-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 14px; perspective: 1000px; }
+.reveal-card {
+    padding: 22px 18px;
+    border: 2px solid var(--log-accent);
+    border-radius: 14px;
+    background: var(--log-input);
+    text-align: center;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.35);
+}
+.reveal-title { margin: 6px 0 0; font-size: clamp(20px, 3.4vw, 30px); line-height: 1.2; color: var(--log-accent); overflow-wrap: anywhere; }
+body[data-theme="arcade"] .reveal-title { font-size: clamp(13px, 2.4vw, 18px); line-height: 1.6; }
+.reveal-order { margin: 8px 0 0; font-size: 13px; color: var(--log-muted); }
+.reveal-vs { font-size: 22px; color: var(--log-muted); }
+.reveal-card.flip-in { animation: night-flip 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both; transform-origin: center; }
+@keyframes night-flip {
+    from { opacity: 0; transform: rotateY(90deg) scale(0.9); }
+    to   { opacity: 1; transform: none; }
+}
+
+.coin {                                       /* a drawn gold coin */
+    display: inline-block;
+    width: 54px;
+    height: 54px;
+    margin: 6px 0 12px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff3b0 0%, #e8b93a 45%, #a8761a 100%);
+    box-shadow: inset 0 0 0 4px rgba(120, 80, 10, 0.55), inset 0 0 0 7px rgba(255, 240, 180, 0.45), 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+.coin.flipping { animation: night-coin 1.2s cubic-bezier(0.3, 0.1, 0.3, 1) both; }
+@keyframes night-coin {
+    0%   { transform: translateY(0) rotateX(0); }
+    50%  { transform: translateY(-40px) rotateX(1080deg); }
+    100% { transform: translateY(0) rotateX(2160deg); }
+}
+.same-card .night-big { color: var(--log-accent); }
+
+/* ---------- Judging ---------- */
+.judge-card { display: flex; flex-direction: column; gap: 12px; }
+.score-row-line { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.score-buttons { display: flex; gap: 6px; }
+.night-page .score-btn {
+    width: 34px; height: 34px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid var(--log-border);
+    border-radius: 6px;
+    background: var(--log-bg);
+}
+.night-page .score-btn:hover { border-color: var(--log-accent); }
+.night-page .score-btn[aria-checked="true"] { background: var(--log-accent); color: var(--log-on-accent); border-color: var(--log-accent); }
+
+/* ---------- Results ---------- */
+.results-score { margin: 0 0 10px; font-size: clamp(34px, 7vw, 56px); line-height: 1; color: var(--log-accent); font-variant-numeric: tabular-nums; }
+.table-wrap { overflow-x: auto; margin: 0 auto 8px; max-width: 100%; }
+.results-table { border-collapse: collapse; margin: 0 auto; min-width: 320px; }
+.results-table th, .results-table td { padding: 8px 12px; border-bottom: 1px solid var(--log-border); text-align: center; }
+.results-table thead th { font-weight: normal; color: var(--log-muted); }
+.results-table tbody th { text-align: left; font-weight: normal; color: var(--log-muted); }
+.results-table tr.total td, .results-table tr.total th { font-weight: bold; color: var(--log-fg); border-bottom: 0; }
+.results-card { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+
+/* ---------- Prototype bar ---------- */
+.proto-bar {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+    margin: 0 -28px;
+    padding: 10px 28px calc(10px + env(safe-area-inset-bottom, 0px));
+    background: var(--log-bg);
+    border-top: 2px dashed var(--log-border);
+    font-size: 12px;
+    color: var(--log-muted);
+}
+.proto-tag { font-weight: bold; color: var(--log-fg); }
+.proto-group { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.proto-clock { font-variant-numeric: tabular-nums; min-width: 4.5em; }
+.night-page .proto-btn { padding: 4px 10px; border: 1px solid var(--log-border); border-radius: 5px; background: var(--log-input); color: var(--log-fg); }
+.night-page .proto-btn.on { background: var(--log-accent); color: var(--log-on-accent); border-color: var(--log-accent); }
+.night-page .proto-btn.danger:hover { border-color: #ff6b6b; color: #ff6b6b; }
+
+/* ---------- Phones ---------- */
+@media (max-width: 640px) {
+    .night-sheet { padding-left: 16px; padding-right: 16px; border: 0; }
+    .proto-bar { margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
+    .champion-row, .clue-row, .judge-row, .clue-recap { grid-template-columns: 1fr; }
+    .reveal-row { grid-template-columns: 1fr; }
+    .reveal-vs { text-align: center; }
+    .cd-unit { min-width: 52px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reveal-card.flip-in, .coin.flipping, .seal.is-sealed { animation: none; }
+    body.stage .modal-content .modal-link { animation: none; opacity: 0.85; }
+}
+
+/* ==========================================================================
+   POSTERS & MOVIE SEARCH
+   ========================================================================== */
+.poster { display: block; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 6px; background: var(--log-input); }
+.poster.thumb { width: 32px; height: 48px; flex: 0 0 32px; border-radius: 3px; }
+.poster.medium { width: min(150px, 36vw); margin: 10px auto 6px; box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45); }
+.poster.large { width: min(260px, 36vw); border: 3px solid var(--log-accent); box-shadow: 0 0 40px rgba(0, 0, 0, 0.6); }
+span.poster.thumb.poster-fallback { display: inline-flex; align-items: center; justify-content: center; font-size: 16px; }
+
+/* Stand-in poster: the title in the theme's font, with fake credits */
+div.poster-fallback {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10% 8%;
+    text-align: center;
+    background:
+        radial-gradient(ellipse at 50% 30%, rgba(255, 255, 255, 0.18), transparent 60%),
+        linear-gradient(165deg, var(--log-accent), var(--log-bg) 78%);
+    color: var(--log-fg);
+    overflow: hidden;
+}
+.pf-credit { font-size: 0.62em; letter-spacing: 0.14em; text-transform: uppercase; color: var(--log-on-accent); }
+.pf-title { font-size: 1.35em; line-height: 1.1; overflow-wrap: anywhere; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6); }
+.pf-year { font-size: 0.8em; opacity: 0.8; }
+.pf-billing { font-size: 0.48em; line-height: 1.3; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.65; }
+.poster.medium.poster-fallback { font-size: 15px; }
+.poster.large.poster-fallback { font-size: clamp(14px, 2.6vw, 22px); }
+body[data-theme="arcade"] div.poster-fallback { font-size: 10px; }
+body[data-theme="arcade"] .poster.large.poster-fallback { font-size: clamp(9px, 1.5vw, 13px); }
+body[data-theme="arcade"] .pf-title { overflow-wrap: normal; word-break: normal; hyphens: auto; }
+
+.picker { position: relative; width: 100%; display: flex; flex-direction: column; gap: 8px; }
+.picker-list {
+    position: absolute;
+    top: 46px;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    list-style: none;
+    margin: 0;
+    padding: 4px;
+    background: var(--log-bg);
+    border: 1px solid var(--log-accent);
+    border-radius: 8px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+    max-height: 320px;
+    overflow-y: auto;
+}
+.picker-option { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 6px; cursor: pointer; }
+.picker-option.active, .picker-option:hover { background: var(--log-input); }
+.picker-chip { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border: 1px solid var(--log-border); border-radius: 8px; }
+.picker-note:empty { display: none; }
+.locked-pick { display: flex; align-items: center; gap: 12px; }
+.locked-pick .night-big, .locked-pick .night-strong { margin: 0; }
+.pick-year { color: var(--log-muted); font-size: 0.75em; }
+.verdict-posters { display: flex; gap: 14px; justify-content: center; }
+.night-header-actions { display: flex; align-items: center; gap: 8px; }
+.poster-setup .setup-steps { margin: 0 0 12px; padding-left: 20px; }
+.poster-setup a { color: var(--log-accent); }
+.night-page .reveal-card .poster.medium { margin-top: 8px; }
+
+/* ==========================================================================
+   THE REVEAL SHOW
+   Film-leader countdown 3-2-1, a flash, then both posters slam in with a VS
+   ========================================================================== */
+.reveal-show {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    padding: 24px;
+    overflow: hidden;
+    color: var(--log-fg);
+    background: radial-gradient(ellipse at 50% 45%, var(--log-bg) 0%, #000 80%);
+    /* covers the screen at once (no fade-in), so nothing underneath can show through */
+    text-align: center;
+}
+.reveal-show.rs-fantasy { background: radial-gradient(ellipse at 50% 45%, #4a2a86 0%, #150a2c 80%); color: #fff3c4; }
+.reveal-show.leaving { animation: rs-out 0.35s ease-in both; }
+@keyframes rs-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rs-out { to { opacity: 0; transform: scale(1.04); } }
+
+.rs-kicker { margin: 0; font-size: clamp(18px, 3vw, 28px); letter-spacing: 0.2em; text-transform: uppercase; color: var(--log-accent); animation: rs-kicker 1s ease-out both; }
+body[data-theme="arcade"] .rs-kicker { font-size: clamp(12px, 2vw, 18px); }
+@keyframes rs-kicker { from { opacity: 0; letter-spacing: 0.6em; } to { opacity: 1; } }
+
+/* Film leader: rings, crosshairs, a sweeping wedge and the number */
+.rs-leader {
+    position: relative;
+    width: min(240px, 60vw);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 3px solid var(--log-accent);
+    box-shadow: inset 0 0 0 14px transparent, inset 0 0 0 16px var(--log-border), 0 0 40px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.rs-sweep {
+    position: absolute;
+    inset: -20%;
+    background: conic-gradient(from 0deg, color-mix(in srgb, var(--log-accent) 45%, transparent) 0deg 70deg, transparent 70deg);
+}
+.rs-cross { position: absolute; inset: 0; background:
+    linear-gradient(var(--log-border), var(--log-border)) center / 2px 100% no-repeat,
+    linear-gradient(var(--log-border), var(--log-border)) center / 100% 2px no-repeat; }
+.rs-num { position: relative; font-size: clamp(80px, 18vw, 150px); line-height: 1; color: var(--log-fg); text-shadow: 0 0 30px var(--log-accent); }
+body[data-theme="arcade"] .rs-num { font-size: clamp(50px, 12vw, 100px); }
+.rs-leader.tick .rs-sweep { animation: rs-sweep 0.8s linear both; }
+.rs-leader.tick .rs-num { animation: rs-pop 0.8s ease-out both; }
+@keyframes rs-sweep { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes rs-pop { 0% { transform: scale(1.4); opacity: 0; } 25% { opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+
+/* The duel */
+.rs-duel { display: none; align-items: center; justify-content: center; gap: clamp(10px, 3vw, 40px); }
+.rs-poster { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.rs-poster figcaption { display: flex; flex-direction: column; gap: 2px; max-width: min(260px, 36vw); }
+.rs-who { font-size: 14px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--log-accent); text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8); }
+.rs-title { font-size: clamp(15px, 2.4vw, 22px); line-height: 1.2; overflow-wrap: anywhere; }
+body[data-theme="arcade"] .rs-title { font-size: clamp(10px, 1.8vw, 14px); line-height: 1.6; }
+.rs-vs { font-size: clamp(34px, 7vw, 72px); color: var(--log-accent); text-shadow: 0 0 24px var(--log-accent), 0 4px 0 #000; }
+
+.reveal-show.duel .rs-kicker,
+.reveal-show.duel .rs-leader { display: none; }
+.reveal-show.duel .rs-duel { display: flex; animation: rs-shake 0.45s 0.55s ease-in-out both; }
+.reveal-show.duel .rs-poster.left  { animation: rs-slam-left 0.6s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+.reveal-show.duel .rs-poster.right { animation: rs-slam-right 0.6s 0.12s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+.reveal-show.duel .rs-vs { animation: rs-vs 0.5s 0.4s cubic-bezier(0.2, 1.6, 0.4, 1) both; }
+@keyframes rs-slam-left  { from { transform: translateX(-70vw) rotate(-14deg); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes rs-slam-right { from { transform: translateX(70vw) rotate(14deg); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes rs-vs { from { transform: scale(4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes rs-shake { 0%, 100% { transform: none; } 20% { transform: translate(-8px, 4px); } 40% { transform: translate(7px, -5px); } 60% { transform: translate(-5px, 3px); } 80% { transform: translate(4px, -2px); } }
+
+/* A flash of light as they land, then spotlights behind them */
+.rs-flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+.reveal-show.duel .rs-flash { animation: rs-flash 0.5s 0.5s ease-out both; }
+@keyframes rs-flash { 0% { opacity: 0; } 15% { opacity: 0.7; } 100% { opacity: 0; } }
+.reveal-show.rs-horror.duel .rs-flash { background: #c00000; }
+.rs-beams { position: absolute; inset: -30%; opacity: 0; pointer-events: none;
+    background:
+        conic-gradient(from 200deg at 20% 100%, transparent 0deg, color-mix(in srgb, var(--log-accent) 40%, transparent) 10deg, transparent 22deg),
+        conic-gradient(from 138deg at 80% 100%, transparent 0deg, color-mix(in srgb, var(--log-accent) 40%, transparent) 10deg, transparent 22deg); }
+
+/* Starburst of rays behind the duel: flares in as the posters land, then turns slowly */
+.rs-burst {
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 160vmax; height: 160vmax;
+    margin: -80vmax 0 0 -80vmax;
+    opacity: 0;
+    pointer-events: none;
+    background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--log-accent) 26%, transparent) 0deg 5deg, transparent 5deg 15deg);
+    -webkit-mask: radial-gradient(circle, #000 0%, transparent 55%);
+            mask: radial-gradient(circle, #000 0%, transparent 55%);
+}
+.reveal-show.duel .rs-burst { animation: rs-burst-in 0.8s 0.5s ease-out both, rs-burst-spin 40s 0.5s linear infinite; }
+@keyframes rs-burst-in { from { opacity: 0; transform: scale(0.3); } to { opacity: 1; transform: scale(1); } }
+@keyframes rs-burst-spin { to { rotate: 360deg; } }
+.reveal-show.duel .rs-beams { animation: rs-beams 6s 0.5s ease-in-out infinite alternate both; }
+@keyframes rs-beams { from { opacity: 0.9; transform: rotate(-4deg); } to { opacity: 0.9; transform: rotate(4deg); } }
+
+.night-page .rs-continue, .reveal-show .rs-continue { opacity: 0; transform: translateY(8px); transition: opacity 0.4s, transform 0.4s; }
+.reveal-show .rs-continue {
+    all: unset; box-sizing: border-box; cursor: pointer; font: inherit;
+    padding: 10px 22px; border-radius: 8px; background: var(--log-accent); color: var(--log-on-accent);
+    opacity: 0; transform: translateY(8px); transition: opacity 0.4s, transform 0.4s;
+}
+.reveal-show .rs-continue.ready { opacity: 1; transform: none; }
+.reveal-show .rs-continue:focus-visible { outline: 2px solid var(--log-fg); outline-offset: 3px; }
+
+@media (max-width: 640px) {
+    .rs-duel { gap: 8px; }
+    .poster.large { width: 38vw; }
+    .rs-vs { font-size: 28px; }
+}
+
+/* ---------- Clue ideas ---------- */
+.clue-ideas { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; min-height: 1.4em; font-size: 12px; }
+.clue-ideas:empty { display: none; }
+.idea-label, .idea-note { color: var(--log-muted); }
+.night-page .idea-chip {
+    padding: 4px 10px;
+    border: 1px dashed var(--log-accent);
+    border-radius: 999px;
+    color: var(--log-fg);
+    background: var(--log-bg);
+    font-size: 12px;
+    line-height: 1.3;
+}
+.night-page .idea-chip:hover { border-style: solid; background: var(--log-input); }
+.night-page .idea-more { font-size: 12px; }
+body[data-theme="arcade"] .night-page .idea-chip, body[data-theme="arcade"] .clue-ideas { font-size: 10px; }
+
+/* ==========================================================================
+   MOVIE ART: backdrops and title logos in the reveal and the verdict
+   ========================================================================== */
+/* ---------- Reveal: each movie's backdrop fills its half ---------- */
+.rs-bd {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 55%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 0.9s ease;
+    filter: brightness(0.62) saturate(1.1);
+    pointer-events: none;
+}
+.rs-bd.left  { left: 0;  -webkit-mask-image: linear-gradient(to right, #000 55%, transparent); mask-image: linear-gradient(to right, #000 55%, transparent); }
+.rs-bd.right { right: 0; -webkit-mask-image: linear-gradient(to left, #000 55%, transparent);  mask-image: linear-gradient(to left, #000 55%, transparent); }
+.reveal-show.duel .rs-bd.loaded { opacity: 1; animation: rs-kenburns 14s 0.4s ease-out both; }
+.reveal-show.duel .rs-bd.right.loaded { animation-name: rs-kenburns-r; }
+@keyframes rs-kenburns   { from { transform: scale(1.12) translateX(2%); }  to { transform: scale(1); } }
+@keyframes rs-kenburns-r { from { transform: scale(1.12) translateX(-2%); } to { transform: scale(1); } }
+/* With backdrops behind, the starburst steps back so it doesn't compete */
+.reveal-show.has-backdrops .rs-burst { filter: opacity(0.35); }
+.reveal-show.has-backdrops .rs-beams { filter: opacity(0.5); }
+.rs-duel, .rs-kicker, .rs-leader, .reveal-show .rs-continue { position: relative; z-index: 1; }
+
+.rs-logo {
+    display: block;
+    max-width: min(260px, 36vw);
+    max-height: 84px;
+    margin: 4px auto 0;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.8));
+}
+.rs-logo[hidden] { display: none; }
+/* When the official logo is showing, keep the plain title for screen readers only */
+.rs-title.has-logo, .vh-title.has-logo {
+    position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* ---------- Verdict: the winner takes the stage ---------- */
+.verdict-hero {
+    position: relative;
+    min-height: 340px;
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    padding: 28px;
+    background: linear-gradient(160deg, var(--log-accent), var(--log-bg) 80%);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+    isolation: isolate;
+}
+.vh-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+.vh-bg.loaded { opacity: 1; animation: rs-kenburns 18s ease-out both; }
+.vh-bg.from-poster { filter: blur(26px) saturate(1.2); transform: scale(1.2); animation: none; }
+.verdict-hero::after {                    /* shade so the text always reads */
+    content: "";
+    position: absolute; inset: 0; z-index: -1;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.35) 55%, rgba(0, 0, 0, 0.15) 100%);
+}
+.vh-content { position: relative; color: #fff; max-width: 70%; }
+.vh-label {
+    display: inline-block;
+    margin: 0 0 10px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--log-accent);
+    color: var(--log-on-accent);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+.vh-logo { display: block; max-width: min(360px, 60vw); max-height: 120px; object-fit: contain; filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.8)); }
+.vh-logo[hidden] { display: none; }
+.vh-title { margin: 0; font-size: clamp(28px, 5vw, 48px); line-height: 1.05; text-shadow: 0 3px 14px rgba(0, 0, 0, 0.8); }
+body[data-theme="arcade"] .vh-title { font-size: clamp(18px, 3.4vw, 28px); line-height: 1.5; }
+.vh-who { margin: 8px 0 0; font-size: 15px; opacity: 0.9; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8); }
+
+/* The loser: small, black and white, stamped */
+.vh-loser {
+    position: absolute;
+    right: 40px;                          /* leaves room for the stamp, which is wider than the poster */
+    bottom: 22px;
+    margin: 0;
+    width: 110px;
+    text-align: center;
+    color: #ddd;
+    transform: rotate(3deg);
+}
+.vh-loser .poster.medium { width: 110px; margin: 0; filter: grayscale(1) brightness(0.75); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6); }
+.vh-loser figcaption { margin-top: 6px; font-size: 12px; opacity: 0.8; overflow-wrap: anywhere; }
+.vh-stamp {
+    position: absolute;
+    top: 38%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-14deg);
+    padding: 4px 8px;
+    border: 2px solid #e03131;
+    border-radius: 4px;
+    color: #ff6b6b;
+    background: rgba(0, 0, 0, 0.55);
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+/* A tie splits the stage */
+.verdict-hero.is-tie { padding: 0; align-items: stretch; }
+.vh-half { position: relative; flex: 1; display: flex; align-items: flex-end; padding: 24px; isolation: isolate; }
+.vh-half + .vh-half { border-left: 2px solid var(--log-accent); }
+.vh-half .vh-content { max-width: 100%; }
+.vh-tie {
+    position: absolute; top: 18px; left: 50%; transform: translateX(-50%); z-index: 1;
+    margin: 0; padding: 6px 16px; border-radius: 999px; background: var(--log-accent); color: var(--log-on-accent);
+    font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+    .verdict-hero { min-height: 300px; padding: 20px; }
+    .vh-content { max-width: 100%; }
+    .vh-logo { max-width: 78%; max-height: 90px; }
+    /* the loser moves to the top corner so it never collides with the winner's logo */
+    .vh-loser { width: 74px; right: 30px; top: 18px; bottom: auto; }   /* room for the stamp */
+    .vh-loser .poster.medium { width: 74px; }
+    .vh-stamp { font-size: 8px; padding: 3px 5px; letter-spacing: 0.03em; }
+    .verdict-hero.is-tie { flex-direction: column; min-height: 420px; }
+    .vh-half + .vh-half { border-left: 0; border-top: 2px solid var(--log-accent); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .reveal-show.duel .rs-bd.loaded, .vh-bg.loaded { animation: none; }
+}
+/* In a tie each logo has half the stage, so keep it a bit smaller */
+.verdict-hero.is-tie .vh-logo { max-width: 78%; max-height: 90px; }
+
+/* ==========================================================================
+   REVEAL MONTAGE: full-screen stills from both movies, alternating, speeding up
+   ========================================================================== */
+.mt-stage {
+    position: absolute;
+    inset: 0;
+    display: none;
+    overflow: hidden;
+    background: #000;                 /* solid, so the page never shows through between stills */
+    pointer-events: none;
+}
+.reveal-show.montage .mt-stage { display: block; }
+.mt-layer {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: #000;
+    opacity: 0;
+    /* --even: set per still so they all end up about equally bright (no flashes between them) */
+    filter: brightness(calc(var(--even, 1) * 0.85)) contrast(0.95);
+    will-change: transform, opacity;
+}
+.reveal-show.montage .rs-leader { display: none; }
+/* No text during the montage (or the dark moment before it): the pictures carry it */
+.reveal-show.montage .rs-kicker,
+.reveal-show.waiting .rs-kicker,
+.reveal-show.waiting .rs-leader { display: none; }
+
+.mt-img {                             /* the prepared still, filling the screen */
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* ---------- Each theme's flavour on the stills (brightness evening-out still applies) ---------- */
+body[data-theme="noir"] .mt-layer      { filter: grayscale(1) contrast(1.1) brightness(calc(var(--even, 1) * 0.78)); }
+body[data-theme="arcade"] .mt-layer, body[data-theme="arcade"] .mt-img { image-rendering: pixelated; }
+body[data-theme="arcade"] .mt-layer    { filter: saturate(1.3) brightness(calc(var(--even, 1) * 0.85)); }
+body[data-theme="cyberpunk"] .mt-layer { filter: saturate(1.5) hue-rotate(-18deg) brightness(calc(var(--even, 1) * 0.82)); }
+body[data-theme="horror"] .mt-layer    { filter: saturate(0.45) sepia(0.25) contrast(1.1) brightness(calc(var(--even, 1) * 0.7)); }
+body[data-theme="cinema"] .mt-layer    { filter: sepia(0.18) saturate(1.1) brightness(calc(var(--even, 1) * 0.85)); }
+body[data-theme="fantasy"] .mt-layer   { filter: saturate(1.2) brightness(calc(var(--even, 1) * 0.9)); }
+body[data-theme="noir"] .mt-stage::after {        /* film grain for Noir */
+    content: ""; position: absolute; inset: 0; z-index: 2; opacity: 0.18; pointer-events: none;
+    background: repeating-radial-gradient(circle at 30% 40%, rgba(255,255,255,0.4) 0 1px, transparent 1px 3px);
+    mix-blend-mode: overlay;
+}
+

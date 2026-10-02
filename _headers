@@ -1,0 +1,15 @@
+# Security headers for the hosted site (read by Netlify and Cloudflare Pages).
+#
+# Content-Security-Policy: the page may only load its own files, plus:
+#   - movie details from TMDB's API, and posters/stills from TMDB's image server
+#   - a background worker the confetti library creates for itself (blob:)
+# Nothing else runs or loads, even if something tried to inject code.
+#
+# Other headers: no guessing file types, send only the site's address (not full
+# URLs) to other sites, block camera/mic/location, and don't allow the app to be
+# embedded inside another site (which could trick you into clicking things).
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https://image.tmdb.org; connect-src 'self' https://api.themoviedb.org; font-src 'self'; media-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()

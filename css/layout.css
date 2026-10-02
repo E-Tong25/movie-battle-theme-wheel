@@ -1,0 +1,235 @@
+/* ==========================================================================
+   SHARED LAYOUT — loaded after every theme file, so these rules win.
+   Themes control colors, fonts and effects; this file controls size and
+   position, so the wheel stays put when themes swap mid-spin.
+   ========================================================================== */
+
+body {
+    box-sizing: border-box;
+    justify-content: flex-start;          /* anchor to the top instead of re-centering on every swap */
+    padding-top: max(68px, 8.5vh);        /* leaves room under the control panel */
+}
+
+/* Title and result get fixed-height boxes so different fonts can't push the wheel around */
+h1 {
+    box-sizing: border-box;
+    height: 96px;
+    margin: 0;
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    line-height: 1.1;
+}
+
+/* Wordmark: the big "MOVIE BATTLE", with the rest of the title as a tagline */
+h1 .wm-main { font-size: min(1.5em, 48px); }
+h1 .wm-tag {
+    font-size: max(0.48em, 11px);
+    letter-spacing: 0.18em;
+    opacity: 0.8;
+}
+
+#result {
+    box-sizing: border-box;
+    height: 64px;
+    margin: 0;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.2;
+}
+
+.container {
+    gap: 25px;
+    width: 100%;
+    overflow-x: clip;        /* a rotated wheel's box is wider than the wheel; don't let it widen the page */
+}
+
+.wheel-container {
+    /* As big as the screen height allows (up to 520px), never wider than the screen */
+    --wheel-size: min(520px, 90vw, max(300px, calc(100vh - 406px)));
+    width: var(--wheel-size);
+    height: var(--wheel-size);
+    margin-top: 20px;
+}
+
+/* "Now passing" names while the wheel spins */
+#result.passing { opacity: 0.8; }
+
+/* Borders are drawn inside the canvas box so they don't change the wheel's size */
+#wheel {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+}
+
+#spinBtn {
+    box-sizing: border-box;
+    height: 56px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ---------- Control panel: the same spacing in every theme ----------
+   Themes still set the panel's colors, border, background and font. */
+.controls-panel {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 20px;                          /* between groups */
+    min-height: 44px;
+    padding: 6px 16px;
+    line-height: 1.2;
+}
+.control-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;                           /* between a label and its control */
+    white-space: nowrap;
+}
+.control-label { font-size: max(12px, 1em); }
+
+/* Theme menu: takes its colors from each theme's control panel */
+#themeSelect {
+    font: inherit;
+    font-size: 12px;
+    color: inherit;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid currentColor;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+#themeSelect option { background: #111; color: #eee; }
+
+
+/* Visible keyboard focus in every theme */
+button:focus-visible,
+#themeSelect:focus-visible,
+.switch input:focus-visible + .toggle-slider {
+    outline: 3px solid currentColor;
+    outline-offset: 3px;
+}
+
+/* ---------- Phones ---------- */
+@media (max-width: 600px) {
+    /* overflow-x: a rotated wheel's box is wider than the wheel, which let phones scroll sideways after a spin */
+    body { overflow-y: auto; overflow-x: hidden; padding-top: 12px; }
+
+    /* Two tidy rows: both switches, then the theme menu, all centered.
+       A fixed height keeps the wheel from moving when themes change. */
+    .controls-panel {
+        position: static;
+        display: grid;                             /* 2 x 2: switches on top, menu + log below */
+        grid-template-columns: repeat(2, auto);
+        justify-content: center;
+        align-content: center;
+        justify-items: center;
+        height: 88px;
+        width: fit-content;
+        max-width: calc(100% - 24px);
+        row-gap: 10px;
+        column-gap: 22px;
+        padding: 8px 18px;
+        margin: 0 auto 14px;
+    }
+    .label-long { display: none; }                 /* "TURBO" / "SHIFT" / "Log" on phones */
+
+    h1 { height: 104px; font-size: 20px; }
+    #result { height: 72px; font-size: 18px; }
+
+    /* The arcade pixel font is very wide, so it needs smaller sizes to fit */
+    body[data-theme="arcade"] h1 { font-size: 14px; }
+    body[data-theme="arcade"] #result { font-size: 12px; line-height: 1.6; }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+    .spotlight { animation: none; }
+    .pointer, button { transition: none; }
+}
+
+
+/* ---------- Title vs subtitle hierarchy ----------
+   The subtitle ("SPIN to Choose a Theme!", and the result line) is smaller and
+   softer than the title in every theme, so the title clearly leads. */
+body[data-theme="cyberpunk"] #result { font-size: 18px; }
+body[data-theme="cinema"]    #result { font-size: 18px; color: #f3e6c4; }
+body[data-theme="noir"]      #result { font-size: 18px; color: #b8b8b8; }
+body[data-theme="arcade"]    #result { font-size: 12px; color: #8fdc8f; }
+body[data-theme="horror"]    #result { font-size: 22px; color: #e0a8a8; }
+body[data-theme="fantasy"]   #result { font-size: 19px; color: #6b4fa0; }
+
+/* ---------- Control panel labels: never smaller than 12px ---------- */
+body[data-theme="cinema"] .controls-panel,
+body[data-theme="noir"] .controls-panel,
+body[data-theme="arcade"] .controls-panel { font-size: 12px; }
+
+@media (max-width: 600px) {
+    /* the wide arcade pixel font needs a tighter tagline on phones */
+    body[data-theme="arcade"] h1 .wm-tag { letter-spacing: 0.02em; font-size: 9px; }
+}
+
+/* Horror's Creepster title is taller than the others; trim it so the gap
+   under the control panel matches the other themes */
+body[data-theme="horror"] h1 .wm-main { font-size: min(1.5em, 42px); }
+
+
+/* ---------- Bench row under SPIN: "12 on the wheel · 5 on the bench" ---------- */
+.bench-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px 14px;
+    margin-top: -12px;                   /* sits closer to SPIN than the container gap */
+    font-size: 12px;
+    opacity: 0.9;
+}
+.bench-info { white-space: nowrap; }
+.bench-row .bench-btn {
+    all: unset;
+    box-sizing: border-box;
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+    color: inherit;
+    padding: 3px 10px;
+    border: 1px solid currentColor;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.3);
+    white-space: nowrap;
+}
+.bench-row .bench-btn:hover { background: rgba(0, 0, 0, 0.5); }
+.bench-row .bench-btn:focus-visible { outline: 3px solid currentColor; outline-offset: 2px; }
+.bench-row .bench-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+body[data-theme="fantasy"] .bench-row { color: #4b2a8c; }
+body[data-theme="fantasy"] .bench-row .bench-btn { background: rgba(255, 255, 255, 0.6); border-color: #c9a24a; }
+body[data-theme="arcade"] .bench-row, body[data-theme="arcade"] .bench-row .bench-btn { font-size: 10px; }
+body[data-theme="horror"] .bench-row { color: #e0b8b8; }
+
+/* Music button: dimmed when the current theme has no track */
+.bench-row .music-btn.no-track { opacity: 0.55; }
+
+/* ---------- "Open with Open Movie Battle.command" notice (only when opened straight from a file) ---------- */
+.open-notice {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 20px;
+    background: #fff4d6;
+    color: #3b2a00;
+    border-bottom: 2px solid #d9a52c;
+    font: 15px/1.45 system-ui, -apple-system, sans-serif;
+    text-align: left;
+}
+.open-notice[hidden] { display: none; }

@@ -1,0 +1,246 @@
+/* ==========================================================================
+   SIDE PANELS: the Battle Log and the Genre Editor (loaded after the themes)
+   Also defines each theme's panel colours (--log-bg, --log-accent, ...), which
+   Battle Night, the messages and the welcome walkthrough use too.
+   ========================================================================== */
+
+/* ---------- Per-theme colors ---------- */
+body {
+    --log-bg: #111;           --log-fg: #eee;       --log-muted: #aaa;
+    --log-accent: #fff;       --log-on-accent: #000;
+    --log-border: rgba(255, 255, 255, 0.25);        --log-input: rgba(255, 255, 255, 0.06);
+}
+body[data-theme="cyberpunk"] { --log-bg: #0a0216; --log-fg: #eafcff; --log-muted: #9fb3d1; --log-accent: #00f0ff; --log-on-accent: #05000c; --log-border: rgba(0, 240, 255, 0.4); --log-input: rgba(0, 240, 255, 0.06); }
+body[data-theme="cinema"]    { --log-bg: #140f0a; --log-fg: #f3e6c4; --log-muted: #b8a67f; --log-accent: #d4af37; --log-on-accent: #1a1208; --log-border: rgba(212, 175, 55, 0.45); --log-input: rgba(212, 175, 55, 0.07); }
+body[data-theme="noir"]      { --log-bg: #141414; --log-fg: #ececec; --log-muted: #9a9a9a; --log-accent: #f2f2f2; --log-on-accent: #111; --log-border: rgba(255, 255, 255, 0.28); --log-input: rgba(255, 255, 255, 0.05); }
+body[data-theme="arcade"]    { --log-bg: #000;    --log-fg: #b8ffb8; --log-muted: #5fae5f; --log-accent: #00ff00; --log-on-accent: #000; --log-border: rgba(0, 255, 0, 0.5); --log-input: rgba(0, 255, 0, 0.06); }
+body[data-theme="horror"]    { --log-bg: #0d0505; --log-fg: #ecd2d2; --log-muted: #a98080; --log-accent: #d10000; --log-on-accent: #fff; --log-border: rgba(209, 0, 0, 0.5); --log-input: rgba(209, 0, 0, 0.07); }
+body[data-theme="fantasy"]   { --log-bg: #f6ecd2; --log-fg: #3b2a16; --log-muted: #7a6446; --log-accent: #5a2d8c; --log-on-accent: #fff3c4; --log-border: rgba(138, 106, 47, 0.55); --log-input: rgba(255, 255, 255, 0.55); }
+
+/* ---------- The button in the control panel (matches the theme menu) ---------- */
+#logBtn {
+    all: unset;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 12px;
+    color: inherit;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid currentColor;
+    border-radius: 4px;
+    padding: 4px 10px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+body[data-theme="fantasy"] #logBtn { background: rgba(255, 255, 255, 0.65); border-color: #c9a24a; }
+#logBtn:focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }
+
+/* Resetting the themes' button styles also undoes the browser's rule for
+   hidden elements, so restore it for everything in the log */
+.log-panel [hidden], .log-backdrop[hidden], .log-panel[hidden] { display: none !important; }
+
+/* ---------- Drawer ---------- */
+.log-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 104;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+.log-backdrop.open { opacity: 1; }
+
+.log-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 105;
+    box-sizing: border-box;
+    width: min(460px, 100%);
+    height: 100%;
+    overflow-y: auto;
+    padding: calc(18px + env(safe-area-inset-top, 0px)) 22px calc(22px + env(safe-area-inset-bottom, 0px));
+    background: var(--log-bg);
+    color: var(--log-fg);
+    border-left: 1px solid var(--log-border);
+    box-shadow: -20px 0 50px rgba(0, 0, 0, 0.45);
+    transform: translateX(100%);
+    transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+    text-align: left;
+    font-size: 14px;
+    line-height: 1.4;
+}
+.log-panel.open { transform: none; }
+body[data-theme="arcade"] .log-panel { font-size: 11px; line-height: 1.7; }
+
+.log-panel h2, .log-panel h3 { margin: 0; font-weight: normal; }
+.log-panel h2 { font-size: 22px; }
+.log-panel h3 { font-size: 15px; margin-bottom: 10px; color: var(--log-muted); }
+body[data-theme="arcade"] .log-panel h2 { font-size: 16px; }
+body[data-theme="arcade"] .log-panel h3 { font-size: 11px; }
+
+.log-panel h2:focus { outline: none; }
+.log-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+
+/* All panel buttons: reset the themes' big button styles first */
+.log-panel button,
+.log-panel .import-label {
+    all: unset;
+    box-sizing: border-box;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+}
+.log-panel button:focus-visible,
+.log-panel .import-label:focus-within { outline: 2px solid var(--log-accent); outline-offset: 2px; }
+
+.log-panel .log-icon-btn { font-size: 18px; padding: 4px 8px; border-radius: 4px; }
+.log-panel .log-icon-btn:hover { background: var(--log-input); }
+
+.log-panel .log-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    border: 1px solid var(--log-border) !important;
+    border-radius: 6px;
+    background: var(--log-input);
+}
+.log-panel .log-btn:hover { border-color: var(--log-accent) !important; }
+.log-panel .log-btn.primary { background: var(--log-accent); color: var(--log-on-accent) !important; border-color: var(--log-accent) !important; }
+
+.log-panel .log-link { font-size: 12px; color: var(--log-muted) !important; text-decoration: underline; padding: 2px 0; }
+.log-panel .log-link:hover { color: var(--log-fg) !important; }
+.log-panel .log-link.danger:hover { color: #ff6b6b !important; }
+
+.log-warning {
+    margin: 0 0 14px;
+    padding: 10px 12px;
+    border: 1px solid #d9a52c;
+    border-radius: 6px;
+    background: rgba(217, 165, 44, 0.12);
+    font-size: 13px;
+}
+
+/* ---------- Scoreboard ---------- */
+.log-score {
+    padding: 16px;
+    margin-bottom: 18px;
+    border: 1px solid var(--log-border);
+    border-radius: 10px;
+    background: var(--log-input);
+    text-align: center;
+}
+.score-row { display: flex; align-items: center; justify-content: center; gap: 14px; }
+.score-side { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; }
+.score-name {
+    all: unset;
+    box-sizing: border-box;
+    width: 100%;
+    text-align: center;
+    font: inherit;
+    font-size: 15px;
+    color: var(--log-fg);
+    padding: 2px 4px;
+    border-bottom: 1px dashed transparent;
+}
+.score-name:hover, .score-name:focus { border-bottom-color: var(--log-border); }
+.score-num { font-size: 42px; line-height: 1; color: var(--log-muted); }
+.score-num.leading { color: var(--log-accent); }
+.score-vs { color: var(--log-muted); font-size: 13px; }
+.score-detail { margin: 10px 0 0; font-size: 12px; color: var(--log-muted); }
+.score-quip { margin: 6px 0 0; font-style: italic; }
+body[data-theme="arcade"] .score-num { font-size: 30px; }
+body[data-theme="arcade"] .score-name { font-size: 11px; }
+body[data-theme="arcade"] .score-quip { font-style: normal; }
+
+/* ---------- Form ---------- */
+.log-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+.log-form label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--log-muted); }
+.form-row { display: flex; gap: 10px; }
+.form-row > label:first-child { flex: 0 0 150px; }
+.form-row > label:last-child { flex: 1; min-width: 0; }
+.log-form input[type="text"],
+.log-form input[type="date"],
+.log-form select,
+.log-form textarea {
+    box-sizing: border-box;
+    width: 100%;
+    font: inherit;
+    font-size: 14px;
+    color: var(--log-fg);
+    background: var(--log-input);
+    border: 1px solid var(--log-border);
+    border-radius: 6px;
+    padding: 8px 10px;
+}
+body[data-theme="arcade"] .log-form input, body[data-theme="arcade"] .log-form select, body[data-theme="arcade"] .log-form textarea { font-size: 11px; }
+.log-form select option { background: #111; color: #eee; }
+.log-form textarea { resize: vertical; }
+.log-form input:focus, .log-form select:focus, .log-form textarea:focus { outline: 2px solid var(--log-accent); outline-offset: 0; }
+.log-form input[type="date"] { color-scheme: dark; }
+body[data-theme="fantasy"] .log-form input[type="date"] { color-scheme: light; }
+
+.winner-pick { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 0; padding: 8px 10px; border: 1px solid var(--log-border); border-radius: 6px; }
+.winner-pick legend { padding: 0 4px; font-size: 12px; color: var(--log-muted); }
+.winner-pick label { flex-direction: row; align-items: center; gap: 6px; font-size: 14px; color: var(--log-fg); cursor: pointer; }
+.winner-pick input { accent-color: var(--log-accent); }
+
+.form-error { margin: 0; min-height: 1em; font-size: 12px; color: #ff6b6b; }
+body[data-theme="fantasy"] .form-error { color: #a31a1a; }
+.form-actions { display: flex; gap: 10px; }
+
+/* ---------- History ---------- */
+.history-empty { color: var(--log-muted); font-style: italic; margin: 0; }
+.history-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.battle { padding: 12px; border: 1px solid var(--log-border); border-radius: 8px; background: var(--log-input); }
+.battle-meta { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; color: var(--log-muted); margin-bottom: 8px; }
+.battle-theme { text-align: right; }
+.battle-match { display: flex; align-items: center; gap: 10px; }
+.battle-pick { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.battle-pick:last-child { text-align: right; }
+.pick-movie { overflow-wrap: anywhere; }
+.pick-who { font-size: 11px; color: var(--log-muted); }
+.battle-pick.won .pick-movie { color: var(--log-accent); font-weight: bold; }
+.battle-vs { color: var(--log-muted); font-size: 12px; }
+.battle-notes { margin: 8px 0 0; font-size: 13px; font-style: italic; color: var(--log-muted); overflow-wrap: anywhere; }
+.battle-actions { display: flex; gap: 14px; justify-content: flex-end; margin-top: 8px; }
+
+/* ---------- Footer ---------- */
+.log-footer { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--log-border); }
+.log-status { flex-basis: 100%; margin: 0; font-size: 12px; color: var(--log-muted); min-height: 1em; }
+
+/* ---------- Genre editor (shares the panel styles above) ---------- */
+.genre-summary { margin: 0 0 16px; color: var(--log-muted); }
+.log-panel .hint { display: block; font-size: 12px; color: var(--log-muted); font-style: normal; }
+.genre-add { padding: 14px; border: 1px solid var(--log-border); border-radius: 10px; background: var(--log-input); }
+.genre-toggle { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 20px; cursor: pointer; }
+.genre-toggle input { margin-top: 3px; accent-color: var(--log-accent); }
+.genre-list-hint { margin: -4px 0 10px; }
+.genre-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.genre-row { display: flex; align-items: flex-start; gap: 8px; padding: 8px; border: 1px solid var(--log-border); border-radius: 8px; background: var(--log-input); }
+.genre-fields { flex: 1; min-width: 0; display: grid; grid-template-columns: 3fr 2fr; gap: 6px; }
+.genre-fields input {
+    box-sizing: border-box; width: 100%; font: inherit; font-size: 13px; color: var(--log-fg);
+    background: transparent; border: 1px solid transparent; border-radius: 5px; padding: 6px 8px;
+}
+.genre-fields input:hover { border-color: var(--log-border); }
+.genre-fields input:focus { border-color: var(--log-accent); outline: none; background: var(--log-input); }
+.genre-fields input::placeholder { color: var(--log-muted); opacity: 0.7; }
+.genre-long { grid-column: 1 / -1; color: #d9a52c !important; }
+body[data-theme="fantasy"] .genre-long { color: #8a5a00 !important; }
+.log-panel .genre-delete { font-size: 14px; padding: 6px 8px; }
+.log-panel .genre-delete:disabled { opacity: 0.3; cursor: not-allowed; }
+body[data-theme="arcade"] .genre-fields input { font-size: 10px; }
+
+@media (max-width: 600px) {
+    .genre-fields { grid-template-columns: 1fr; }
+    .log-panel { border-left: 0; padding-left: 16px; padding-right: 16px; }
+    .form-row { flex-direction: column; }
+    .form-row > label:first-child { flex: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .log-panel, .log-backdrop { transition: none; }
+}

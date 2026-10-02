@@ -1,6 +1,3 @@
-/* Import a dramatic cinematic movie title font from Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Forum&display=swap');
-
 /* --- CINEMATIC MOVIE SPOTLIGHT ENGINE --- */
 .spotlight {
     position: fixed;

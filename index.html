@@ -3,57 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arcade Edition Spin the Wheel</title>
+    <title>Movie Battle</title>
 
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-    <link id="globalTheme" rel="stylesheet" href="theme-cyberpunk.css">
+    <!-- Every theme's fonts, stored in the project (see fonts/fonts.css) -->
+    <link rel="stylesheet" href="fonts/fonts.css">
+
+    <!-- All themes load at startup; only the one with media="all" is active.
+         Switching themes just flips these, so there's no download or flash mid-spin. -->
+    <link rel="stylesheet" class="theme-sheet" href="css/theme-cyberpunk.css" media="all">
+    <link rel="stylesheet" class="theme-sheet" href="css/theme-cinema.css" media="not all">
+    <link rel="stylesheet" class="theme-sheet" href="css/theme-noir.css" media="not all">
+    <link rel="stylesheet" class="theme-sheet" href="css/theme-arcade.css" media="not all">
+    <link rel="stylesheet" class="theme-sheet" href="css/theme-horror.css" media="not all">
+    <link rel="stylesheet" class="theme-sheet" href="css/theme-fantasy.css" media="not all">
+
+    <!-- Shared sizes and positions (must come after the themes) -->
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/side-panels.css">
+    <link rel="stylesheet" href="css/messages.css">
+    <link rel="stylesheet" href="css/welcome.css">
+    <link rel="stylesheet" href="css/battle-night.css">
+    <!-- Animated lighting for every theme (see lighting/) -->
+    <link rel="stylesheet" href="lighting/lighting.css">
 </head>
 <body>
+    <div id="openNotice" class="open-notice" role="alert" hidden>
+        <strong>Use "Open Movie Battle.command" to open the app</strong>
+        <span>This page can't run when it's opened straight from a file. In the project folder, double-click
+        <b>Open Movie Battle.command</b> instead. (First time: right-click it, choose Open, then Open again.)</span>
+    </div>
 
+    <!-- Each label is grouped with its control so they never wrap apart.
+         On phones the word "SPIN" is hidden to keep both switches on one row. -->
     <div class="controls-panel">
-        <span>⚡ TURBO SPIN</span>
-        <label class="switch">
-            <input type="checkbox" id="turboToggle">
-            <span class="toggle-slider"></span>
+        <div class="control-group">
+            <span class="control-label">TURBO<span class="label-long"> SPIN</span></span>
+            <label class="switch">
+                <input type="checkbox" id="turboToggle" aria-label="Turbo spin">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+
+        <div class="control-group">
+            <span class="control-label">SHIFT<span class="label-long"> SPIN</span></span>
+            <label class="switch">
+                <input type="checkbox" id="shiftToggle" aria-label="Shift spin: change themes while spinning">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+
+        <label class="control-group theme-picker">
+            <select id="themeSelect" aria-label="Theme"></select>
         </label>
 
-        <span style="margin-left: 15px;">🌌 SHIFT SPIN</span>
-        <label class="switch">
-            <input type="checkbox" id="shiftToggle">
-            <span class="toggle-slider"></span>
-        </label>
-
-        <button id="themeBtn" onclick="toggleGlobalTheme()" style="margin-left: 10px; padding: 4px 12px; font-size: 11px; font-weight: bold; cursor: pointer;">🎬 SWAP THEME</button>
+        <button id="logBtn" class="control-group" type="button" aria-haspopup="dialog" aria-controls="logPanel">
+            <span class="label-long">Battle </span>Log
+        </button>
     </div>
 
     <div class="spotlight light-left"></div>
     <div class="spotlight light-right"></div>
 
-    <h1>MOVIE BATTLE THEMES EPIC SPINNER WHEEL THING</h1>
-    <p id="result">SPIN to Choose a Theme!</p>
+    <h1><span class="wm-main">MOVIE BATTLE</span><span class="wm-tag">Two Critics. One Couch. Zero Mercy.</span></h1>
+    <p id="result" aria-live="polite">Spin it. No take-backs.</p>
 
     <div class="container">
         <div class="wheel-container">
             <div id="pointer" class="pointer"></div>
-            <canvas id="wheel" width="360" height="360"></canvas>
+            <canvas id="wheel" width="360" height="360" role="img" aria-label="Spinning wheel of movie themes"></canvas>
         </div>
-        <button id="spinBtn" onclick="spin()">SPIN</button>
+        <button id="spinBtn" type="button">SPIN</button>
+        <!-- Up to 12 genres fit on the wheel; the rest wait on the bench -->
+        <div class="bench-row">
+            <span id="benchInfo" class="bench-info" aria-live="polite"></span>
+            <button id="shuffleBtn" type="button" class="bench-btn" title="Draw a new random set of genres">Shuffle</button>
+            <button id="editGenresBtn" type="button" class="bench-btn" aria-haspopup="dialog" aria-controls="genrePanel">Edit genres</button>
+            <button id="nightBtn" type="button" class="bench-btn night-bench-btn" aria-haspopup="dialog" hidden>Battle night</button>
+            <button id="musicBtn" type="button" class="bench-btn music-btn" aria-pressed="true">Music</button>
+        </div>
     </div>
 
-    <div id="eliminationModal" class="modal">
+    <div id="eliminationModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalWinner">
         <div class="modal-content">
-            <h2 id="modalWinner">🎉 Options Landed! 🎉</h2>
-            <p>Would you like to eliminate this option from the wheel for the next spin?</p>
+            <h2 id="modalWinner">Options Landed!</h2>
+            <p>Lock it in to plan the battle, or spin again.</p>
             <div class="modal-btns">
-                <button id="eliminateBtn" class="modal-btn btn-remove" onclick="eliminateOption()">HELL YA</button>
-                <button class="modal-btn btn-keep" onclick="closeModal()">HELL NO</button>
+                <!-- Takes the theme off the wheel and opens Battle Night (see js/battle-night/) -->
+                <button id="scheduleBtn" type="button" class="modal-btn btn-remove">Lock it in</button>
+                <button id="keepBtn" type="button" class="modal-btn btn-keep">Nah, spin again</button>
             </div>
+            <!-- Takes it off the wheel without planning a battle (with Undo) -->
+            <button id="eliminateBtn" type="button" class="modal-link">Just remove it from the wheel</button>
         </div>
     </div>
 
-    <script src="options.js" defer></script>
-    <script src="audio.js" defer></script>
-    <script src="app.js" defer></script>
+    <!-- ================= BATTLE LOG (see js/features/battle-log.js) ================= -->
+    <div id="logBackdrop" class="log-backdrop" hidden></div>
+    <aside id="logPanel" class="log-panel" role="dialog" aria-modal="true" aria-labelledby="logTitle" hidden>
+        <header class="log-header">
+            <h2 id="logTitle" tabindex="-1">Battle Log</h2>
+            <button id="logClose" class="log-icon-btn" type="button" aria-label="Close battle log">×</button>
+        </header>
+
+        <p id="logWarning" class="log-warning" hidden>
+            This browser isn't saving the log (private window or strict settings). Use Export to keep a copy.
+        </p>
+
+        <!-- Scoreboard -->
+        <section class="log-score" aria-label="Scoreboard">
+            <div class="score-row">
+                <div class="score-side">
+                    <input id="nameA" class="score-name" aria-label="First player's name" maxlength="24">
+                    <span id="scoreA" class="score-num">0</span>
+                </div>
+                <span class="score-vs">vs</span>
+                <div class="score-side">
+                    <input id="nameB" class="score-name" aria-label="Second player's name" maxlength="24">
+                    <span id="scoreB" class="score-num">0</span>
+                </div>
+            </div>
+            <p id="scoreDetail" class="score-detail"></p>
+            <p id="scoreQuip" class="score-quip"></p>
+        </section>
+
+        <!-- Add / edit a battle -->
+        <form id="battleForm" class="log-form" novalidate>
+            <h3 id="formTitle">Log a battle</h3>
+            <div class="form-row">
+                <label>Date <input id="fDate" type="date" required></label>
+                <label>Theme <select id="fTheme" required></select></label>
+            </div>
+            <label><span id="labelMovieA">Player 1's movie</span> <input id="fMovieA" type="text" maxlength="80" required></label>
+            <label><span id="labelMovieB">Player 2's movie</span> <input id="fMovieB" type="text" maxlength="80" required></label>
+            <fieldset class="winner-pick">
+                <legend>Winner</legend>
+                <label><input type="radio" name="fWinner" value="a" required> <span id="labelWinA">Player 1</span></label>
+                <label><input type="radio" name="fWinner" value="b"> <span id="labelWinB">Player 2</span></label>
+                <label><input type="radio" name="fWinner" value="tie"> Tie</label>
+            </fieldset>
+            <label>Notes <textarea id="fNotes" rows="2" maxlength="300" placeholder="Optional: trash talk, highlights, excuses"></textarea></label>
+            <p id="formError" class="form-error" role="alert"></p>
+            <div class="form-actions">
+                <button id="formSave" type="submit" class="log-btn primary">Save battle</button>
+                <button id="formCancel" type="button" class="log-btn" hidden>Cancel edit</button>
+            </div>
+        </form>
+
+        <!-- History -->
+        <section class="log-history" aria-labelledby="historyTitle">
+            <h3 id="historyTitle">History</h3>
+            <p id="historyEmpty" class="history-empty">No battles yet. Spin the wheel, pick your movies, and may the best critic win.</p>
+            <ol id="historyList" class="history-list"></ol>
+        </section>
+
+        <!-- Backup -->
+        <footer class="log-footer">
+            <button id="exportBtn" type="button" class="log-btn">Export</button>
+            <label class="log-btn import-label">Import<input id="importFile" type="file" accept="application/json,.json" hidden></label>
+            <button id="howItWorksBtn" type="button" class="log-btn">How it works</button>
+            <p id="logStatus" class="log-status" role="status" aria-live="polite"></p>
+        </footer>
+    </aside>
+
+    <!-- ================= GENRE EDITOR (see js/features/genre-editor.js) ================= -->
+    <div id="genreBackdrop" class="log-backdrop" hidden></div>
+    <aside id="genrePanel" class="log-panel genre-panel" role="dialog" aria-modal="true" aria-labelledby="genreTitle" hidden>
+        <header class="log-header">
+            <h2 id="genreTitle" tabindex="-1">Genres</h2>
+            <button id="genreClose" class="log-icon-btn" type="button" aria-label="Close genre editor">×</button>
+        </header>
+        <p id="genreSummary" class="genre-summary"></p>
+
+        <form id="genreAddForm" class="log-form genre-add" novalidate>
+            <h3>Add a genre</h3>
+            <label>Full name <input id="gTitle" type="text" maxlength="60" placeholder="e.g. Heist Gone Wrong" required></label>
+            <label>Short label for the wheel <span class="hint">(optional)</span>
+                <input id="gLabel" type="text" maxlength="20" placeholder="e.g. Heist">
+            </label>
+            <p id="genreError" class="form-error" role="alert"></p>
+            <div class="form-actions"><button type="submit" class="log-btn primary">Add genre</button></div>
+        </form>
+
+        <label class="genre-toggle">
+            <input id="gFavor" type="checkbox">
+            <span>Favor genres we haven't battled yet
+                <span class="hint">Genres you've played a lot, or lately, are less likely to be drawn onto the wheel. Nothing is ever ruled out.</span>
+            </span>
+        </label>
+
+        <section aria-labelledby="genreListTitle">
+            <h3 id="genreListTitle">Your genres</h3>
+            <p class="hint genre-list-hint">Edit a name or label and it saves right away. Short labels (about 14 characters or fewer) read best on the wheel.</p>
+            <ol id="genreList" class="genre-list"></ol>
+        </section>
+
+        <footer class="log-footer">
+            <button id="genreReset" type="button" class="log-btn">Reset to original list</button>
+            <p id="genreStatus" class="log-status" role="status" aria-live="polite"></p>
+        </footer>
+    </aside>
+
+    <script src="libraries/confetti.browser.js" defer></script>
+    <!-- Shown only if this page is opened by double-clicking it (see js/open-notice.js) -->
+    <script src="js/open-notice.js" defer></script>
+    <!-- The app: one module that loads everything else (see js/main.js) -->
+    <script type="module" src="js/main.js"></script>
+    <!-- Lighting: helpers, one rig per theme, then the engine that runs them -->
+    <script src="lighting/shared.js" defer></script>
+    <script src="lighting/cinema.js" defer></script>
+    <script src="lighting/noir.js" defer></script>
+    <script src="lighting/cyberpunk.js" defer></script>
+    <script src="lighting/arcade.js" defer></script>
+    <script src="lighting/horror.js" defer></script>
+    <script src="lighting/fantasy.js" defer></script>
+    <script src="lighting/engine.js" defer></script>
 </body>
 </html>
