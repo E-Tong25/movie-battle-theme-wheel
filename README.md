@@ -12,35 +12,35 @@ This project began with my simple want...primal need... to battle my boyfriend i
 
 Of course like any battle field, I wanted to approach it in the fairest, most open for creativity and grandiose way possible: themes!
 
-I realized broad themes like "Pick an Action movie!" would leave both of us (critically indecisive and one undiagnosed ADHD persons) paralyzed.
+I realized broad themes like *"Pick an Action movie!"* would leave both of us (critically indecisive and one undiagnosed ADHD persons) paralyzed.
 
 Thus, my unconventional but true to my humor themes were born!
 
-Our first Battle Night consisted of the theme of "Story is Sound, and Music is Score." Basically, a fancy way of saying "Which movie has the best soundtrack."
+Our first Battle Night consisted of the theme of *"Story is Sound, and Music is Score."* Basically, a fancy way of saying **"Which movie has the best soundtrack."**
 
-Ironically, my boyfriend chose "The Grand Budapest Hotel" while I pulled out "La La Land." Both incredible movies that the other person in the battle hadn't seen prior, so it was perfect!
+Ironically, my boyfriend chose *The Grand Budapest Hotel* while I pulled out *La La Land*. Both incredible movies that the other person in the battle hadn't seen prior, so it was perfect!
 
 He interpreted the theme in a different way I did, which prompted great discussions after the film.
 
 For me, the success of this battle night left me yearning for more but in an even more "extra" way possible.
 
 What started out as the thought of "Who doesn't like spinning a wheel" rapidly snowballed into more and more ideas:
-- **What if the wheel had different visual genres?
-- **What if the user could not only select different wheel genres but could also have it flip through each of them as it spins?
-- **What if I could effect the speed of the wheel so it could go "Turbo" speed?
-- **What if I could add and remove themes directly in the app?
-- **What if you can schedule time to battle out the theme with a second competitor?
-- **What if you could secretly select your movie, set up clues that could be sent to the other person, building up to the day of the battle?
-- **What if there was some sort of great reveal on the day of the battle?
-- **What if there was some sort of scoring system that each player would fill out to determine the winner?
-- **What if there was a scoreboard that kept track of previous battles and winners along with their selected movie?
-- **What if this wasn't hosted on a local browser but an app?
+- What if the wheel had different visual genres?
+- What if the user could not only select different wheel genres but could also have it flip through each of them as it spins?
+- What if I could effect the speed of the wheel so it could go "Turbo" speed?
+- What if I could add and remove themes directly in the app?
+- What if you can schedule time to battle out the theme with a second competitor?
+- What if you could secretly select your movie, set up clues that could be sent to the other person, building up to the day of the battle?
+- What if there was some sort of great reveal on the day of the battle?
+- What if there was some sort of scoring system that each player would fill out to determine the winner?
+- What if there was a scoreboard that kept track of previous battles and winners along with their selected movie?
+- What if this wasn't hosted on a local browser but an app?
 
-My mom always said I ask too many questions.
+**My mom always said I ask too many questions.**
 
 At the end of the day, my ultimate goal, and what I believe the project's core is:
 
-An intimate and personalized experience where two people can come together, battle it out, and create memories through the love of movies and good ol' fashion competition.
+*An intimate and personalized experience where two people can come together, battle it out, and create memories through the love of movies and good ol' fashion competition.*
 
 ## How a battle works
 
