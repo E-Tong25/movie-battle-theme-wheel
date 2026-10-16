@@ -12,7 +12,7 @@ on a running scoreboard.
 
 ## Contents
 
-- [Background](#background)
+- [Project Origin Story](#project-origin-story)
 - [How a battle works](#how-a-battle-works)
 - [Opening the app](#opening-the-app)
 - [Movie posters (TMDB)](#movie-posters-tmdb)
