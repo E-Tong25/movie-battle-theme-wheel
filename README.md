@@ -2,7 +2,7 @@
 
 # Movie Battle
 
-**Two Critics. One Couch. Zero Mercy.**
+**Two Critics. One Couch. No Mercy.**
 
 A themed spinning wheel for movie battle nights. Spin for a genre, each pick a
 movie in secret, watch both back to back, and judge who wins. Every battle goes
@@ -13,16 +13,16 @@ on a running scoreboard.
 ## Contents
 
 - [Project Origin Story](#project-origin-story)
-- [How a battle works](#how-a-battle-works)
-- [Opening the app](#opening-the-app)
-- [Movie posters (TMDB)](#movie-posters-tmdb)
+- [How a Battle Works](#how-a-battle-works)
+- [Opening the App](#opening-the-app)
+- [Movie Posters (TMDB)](#movie-posters-tmdb)
 - [Customizing](#customizing)
-- [Built with](#built-with)
-- [Current status](#current-status)
-- [What's next](#whats-next)
-- [Challenges and decisions](#challenges-and-decisions)
-- [Where things are](#where-things-are)
-- [Third-party components](#third-party-components)
+- [Built With](#built-with)
+- [Current Status](#current-status)
+- [What's Next](#whats-next)
+- [Challenges and Decisions](#challenges-and-decisions)
+- [Where Things Are](#where-things-are)
+- [Third-Party Components](#third-party-components)
 - [Copyright](#copyright)
 
 ## Project Origin Story
@@ -62,7 +62,7 @@ At the end of the day, my ultimate goal, and what I believe the project's core i
 
 *An intimate and personalized experience where two people can come together, battle it out, and create memories through the love of movies and good ol' fashion competition.*
 
-## How a battle works
+## How a Battle Works
 
 1. **Spin the wheel** for tonight's theme. Lock it in, or spin again.
 2. **Pick a time** in Battle Night. One of you proposes, the other accepts.
@@ -73,18 +73,18 @@ At the end of the day, my ultimate goal, and what I believe the project's core i
 5. **Watch and judge.** Score both movies in secret. The verdict goes into the
    Battle Log, with the scoreboard and history.
 
-| Battle Night: the countdown, sealed picks and clues | The reveal |
+| Battle Night: the Countdown, Hidden Picks and Clues | The Reveal |
 |---|---|
-| ![Battle Night countdown](screenshots/battle-night.jpg) | ![The reveal](screenshots/reveal.jpg) |
-| **The verdict** | **The Battle Log** |
-| ![The verdict](screenshots/verdict.jpg) | ![The Battle Log](screenshots/battle-log.jpg) |
+| ![Battle Night Countdown](screenshots/battle-night.jpg) | ![The Reveal](screenshots/reveal.jpg) |
+| **The Verdict** | **The Battle Log** |
+| ![The Verdict](screenshots/verdict.jpg) | ![The Battle Log](screenshots/battle-log.jpg) |
 
 <img src="screenshots/phone.jpg" alt="Movie Battle on a phone" width="260">
 
 *On a phone. The screenshots use the app's stand-in posters; with a TMDB key,
 real posters and movie stills appear instead.*
 
-## Opening the app
+## Opening the App
 
 Double-click **Open Movie Battle.command**. It starts a small local web server
 and opens the app in your browser; close its Terminal window to stop it.
@@ -124,7 +124,7 @@ it once on each device you use. Without a key, the app shows stand-in posters.
 | A theme's animated background | `lighting/<name>.js` |
 | Background music tracks | `audio/music/` (one per theme) |
 
-## Built with
+## Built With
 
 - **HTML, CSS and JavaScript modules**, with no framework, so the app is just
   files a browser can run directly
@@ -133,7 +133,7 @@ it once on each device you use. Without a key, the app shows stand-in posters.
 - **The TMDB API** for movie search, posters, stills and clue ideas
 - **canvas-confetti** for the celebrations
 
-## Current status
+## Current Status
 
 - **Each device keeps its own data** (Battle Log, genres, battle nights) until
   the shared version, planned with Firebase.
@@ -142,7 +142,7 @@ it once on each device you use. Without a key, the app shows stand-in posters.
   With the shared version, each phone becomes its own player and picks stay
   sealed until the reveal.
 
-## What's next
+## What's Next
 
 1. **Hosting**, so the app has a real web address to open on any device.
 2. **Shared data with Firebase**, so both players use their own phones with the
@@ -153,12 +153,12 @@ it once on each device you use. Without a key, the app shows stand-in posters.
 4. **Messages and calendars**: battle invites sent through the phone's share
    menu, reminders, and battle nights in Apple Calendar.
 
-## Challenges and decisions
+## Challenges and Decisions
 
 Some of the problems I ran into while building this, how I solved them, and
 why I chose one approach over another.
 
-### Keeping the wheel fair
+### Keeping the Wheel Fair
 
 The wheel holds up to 12 genres, because past that the slices get too thin to
 read on a phone. With more genres than that, the rest wait on a "bench," and a
@@ -167,7 +167,7 @@ the wheel, and then the same chance of being picked. An optional setting favors
 genres that haven't been battled yet, but it only makes played ones less likely, never
 impossible, so nothing is ever locked out.
 
-### Fitting genre names into the slices
+### Fitting Genre Names Into the Slices
 
 Labels were spilling over the edges of their slices. They were sized to fit
 along each slice, but slices get narrower toward the center, and the labels
@@ -177,7 +177,7 @@ slice's real width at every point, using each font's actual letter shapes, with
 a margin on both sides. Long names shrink, wrap onto more lines, or, as a last
 resort, get shortened with "..." rather than spill.
 
-### Keeping the picks secret
+### Keeping the Picks Secret
 
 The whole game depends on neither of us seeing the other's movie early. Hiding
 a pick on screen isn't enough on its own, since anyone determined could dig it
@@ -195,7 +195,7 @@ The same-movie check uses TMDB's exact movie IDs rather than titles, so *Heat*
 "The Matrix" count as the same. It runs the moment both picks are locked in,
 not at the reveal, so there's time to pick something else.
 
-### The reveal
+### The Reveal
 
 The reveal is a montage of 30 stills from the two movies, speeding up into the
 moment the posters slam in. Getting it right meant solving several problems:
@@ -219,7 +219,7 @@ moment the posters slam in. Getting it right meant solving several problems:
   split second as the browser drew them. Every still is now fully loaded and
   decoded before its turn comes.
 
-### Sound and music
+### Sound and Music
 
 The background tracks varied hugely in volume, from very quiet to very loud, so
 switching themes felt like someone grabbing the volume knob. Each track was
@@ -237,7 +237,7 @@ control panel became a tidy grid on phones, Battle Night stacks into one column,
 and I fixed a bug where the spinning wheel's rotated outline made the page
 scroll sideways after a spin.
 
-### Saving and sharing
+### Saving and Sharing
 
 For now, everything is saved in the browser, so each device has its own data.
 Export and Import move the Battle Log (and genres) between devices, and a
@@ -260,7 +260,7 @@ means replacing one piece rather than rewriting the app.
 - **The TMDB key stays out of the code.** It's saved only in each browser, so it
   can't end up on GitHub or in the hosted site.
 
-### Organizing the code
+### Organizing the Code
 
 The app started as one large file and grew into two that were over 750 and
 1,250 lines long. I split them into small, clearly named JavaScript modules,
@@ -271,7 +271,7 @@ a page opened by double-clicking it, which is why the project includes
 than by hand, so names were changed only where they're actually code, never
 inside text, and everything was retested afterward.
 
-### Smaller choices
+### Smaller Choices
 
 - **Undo instead of "Are you sure?" pop-ups.** Actions happen right away, with a
   few seconds to take them back. It's friendlier, and it protects against the
@@ -283,7 +283,7 @@ inside text, and everything was retested afterward.
   website, and phones can add it to the home screen like an app. That gives an
   app-like experience without the costs and reviews of the app stores.
 
-## Where things are
+## Where Things Are
 
 ```
 Open Movie Battle.command   double-click to open the app
@@ -318,7 +318,7 @@ libraries/                  the confetti library and its licence
 screenshots/                the pictures in this README
 ```
 
-## Third-party components
+## Third-Party Components
 
 These files are included under their own licenses and are not covered by the
 copyright notice below:
