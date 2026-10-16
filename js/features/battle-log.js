@@ -1,5 +1,6 @@
 import { $, el } from '../core/page-elements.js';
-import { BattleStore } from '../core/saved-data.js';
+import { prepareBackup } from '../core/data-validation.js';
+import { BattleStore, NightStore, storageIssues, storageRecovery } from '../core/saved-data.js';
 import { Toast } from './messages.js';
 import { themes } from '../wheel/genres-and-colors.js';
 import { MovieBattle } from '../wheel/genre-pool.js';
@@ -222,80 +223,77 @@ function renderAll() {
 }
 
 // ---------- Export / import ----------
-els.exportBtn.addEventListener('click', () => {
-    // The backup includes your genre list too, so it can move to another device
-    const backup = MovieBattle
-        ? { ...log, genres: MovieBattle.genres(), favorUnplayed: MovieBattle.favorUnplayed() }
-        : log;
+async function exportBackup() {
+    // Includes the active night and per-player draft scores, but never the TMDB key.
+    const backup = {
+        ...log, backupVersion: 2,
+        genres: MovieBattle.genres(), favorUnplayed: MovieBattle.favorUnplayed(),
+        night: await NightStore.load(), recovery: storageRecovery()
+    };
     const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `movie-battle-log-${todayISO()}.json`;
+    a.download = `movie-battle-backup-${todayISO()}.json`;
     document.body.appendChild(a);
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    setStatus(`Exported ${log.battles.length} battle${log.battles.length === 1 ? '' : 's'}.`);
-});
-
-function validBattle(b) {
-    return b && typeof b === 'object' && typeof b.movieA === 'string' && typeof b.movieB === 'string'
-        && ['a', 'b', 'tie'].includes(b.winner) && typeof b.theme === 'string';
+    setStatus(`Exported ${log.battles.length} battle${log.battles.length === 1 ? '' : 's'} and the active battle, if any.`);
 }
+els.exportBtn.addEventListener('click', exportBackup);
+window.addEventListener('backup:request', exportBackup);
 
-els.importFile.addEventListener('change', () => {
+els.importFile.addEventListener('change', async () => {
     const file = els.importFile.files && els.importFile.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async () => {
-        try {
-            const data = JSON.parse(reader.result);
-            const incoming = Array.isArray(data) ? data : data.battles;
-            if (!Array.isArray(incoming)) throw new Error('no battles');
-            const known = new Set(log.battles.map(b => b.id));
-            let added = 0, skipped = 0;
-            incoming.forEach(b => {
-                if (!validBattle(b)) { skipped++; return; }
-                const id = b.id || newId();
-                if (known.has(id)) return;                 // already have it
-                log.battles.push({ id, date: b.date || todayISO(), theme: b.theme, movieA: b.movieA, movieB: b.movieB,
-                                   winner: b.winner, notes: typeof b.notes === 'string' ? b.notes : '', createdAt: b.createdAt || Date.now() });
-                known.add(id);
-                added++;
-            });
-            // Take the names from the backup if this log still has the default ones
-            if (data.players) {
-                ['a', 'b'].forEach(side => {
-                    const current = log.players[side];
-                    if ((current === 'Player 1' || current === 'Player 2') && data.players[side]) log.players[side] = String(data.players[side]).slice(0, 24);
-                });
-            }
-            // Offer the backup's genre list too, if it has one that differs from yours
-            let genresNote = '';
-            if (MovieBattle && Array.isArray(data.genres) && data.genres.length >= 2) {
-                const clean = data.genres.filter(g => g && typeof g.title === 'string' && g.title.trim())
-                    .map(g => ({ id: g.id, title: g.title.trim().slice(0, 60), label: String(g.label || g.title).trim().slice(0, 20) }));
-                const same = JSON.stringify(clean.map(g => [g.title, g.label])) ===
-                             JSON.stringify(MovieBattle.genres().map(g => [g.title, g.label]));
-                if (clean.length >= 2 && !same) {
-                    const previous = MovieBattle.genres(), previousFavor = MovieBattle.favorUnplayed();
-                    await MovieBattle.updateGenres(clean, typeof data.favorUnplayed === 'boolean' ? { favorUnplayed: data.favorUnplayed } : {});
-                    genresNote = ` Genres updated (${clean.length}).`;
-                    if (Toast) Toast.show(`Your genres were replaced with the ${clean.length} from the backup.`, {
-                        undo: () => MovieBattle.updateGenres(previous, { favorUnplayed: previousFavor })
-                    });
-                }
-            }
-            await persist();
-            renderAll();
-            setStatus(`Imported ${added} battle${added === 1 ? '' : 's'}${skipped ? ` (${skipped} unreadable skipped)` : ''}.${genresNote}`);
-        } catch (err) {
-            setStatus("That file doesn't look like a Movie Battle log.");
+    try {
+        if (file.size > 5 * 1024 * 1024) throw new Error('Backup is too large.');
+        // Stage and validate the WHOLE file before mutating any application state.
+        const prepared = prepareBackup(JSON.parse(await file.text()));
+        const existingNight = await NightStore.load();
+        if (prepared.night && existingNight && existingNight.status !== 'done' &&
+            !confirm('This backup contains a battle night. Replace your current schedule, picks, clues and scores?')) {
+            setStatus('Import cancelled. Your data has not changed.');
+            return;
         }
+        const nextLog = { ...log, players: { ...log.players }, battles: [...log.battles] };
+        const known = new Set(nextLog.battles.map(b => b.id));
+        let added = 0;
+        for (const battle of prepared.log.battles) {
+            if (known.has(battle.id)) continue;
+            nextLog.battles.push(battle);
+            known.add(battle.id);
+            added++;
+        }
+        for (const side of ['a', 'b']) {
+            if (nextLog.players[side] === (side === 'a' ? 'Player 1' : 'Player 2')) nextLog.players[side] = prepared.log.players[side];
+        }
+        let genresNote = '';
+        if (prepared.genres) {
+            const { genres, favorUnplayed } = prepared.genres;
+            const same = JSON.stringify(genres.map(g => [g.title, g.label])) ===
+                JSON.stringify(MovieBattle.genres().map(g => [g.title, g.label])) && favorUnplayed === MovieBattle.favorUnplayed();
+            if (!same) {
+                const previous = MovieBattle.genres(), previousFavor = MovieBattle.favorUnplayed();
+                await MovieBattle.updateGenres(genres, { favorUnplayed });
+                genresNote = ` Genres updated (${genres.length}).`;
+                Toast.show('Genres restored from the backup.', { undo: () => MovieBattle.updateGenres(previous, { favorUnplayed: previousFavor }) });
+            }
+        }
+        log = nextLog;
+        await persist();
+        if (prepared.night) {
+            await NightStore.save(prepared.night);
+            window.dispatchEvent(new CustomEvent('night:restored', { detail: { night: prepared.night } }));
+        }
+        renderAll();
+        setStatus(`Imported ${added} battle${added === 1 ? '' : 's'}${prepared.skipped ? ` (${prepared.skipped} invalid skipped)` : ''}.${genresNote}${prepared.night ? ' Battle night restored.' : ''}`);
+    } catch {
+        setStatus("That file isn't a supported Movie Battle backup. No backup data was imported.");
+    } finally {
         els.importFile.value = '';
-    };
-    reader.readAsText(file);
+    }
 });
 
 // ---------- Open / close ----------
@@ -354,10 +352,12 @@ window.addEventListener('wheel:land', async e => {
 // New or renamed genres show up in the theme choices
 window.addEventListener('genres:changed', () => { if (!editingId) renderThemeOptions(els.theme.value || log.lastTheme); });
 
+window.addEventListener('storage:changed', () => { els.warning.hidden = !storageIssues().length; });
+
 // ---------- Start ----------
 (async () => {
     log = await BattleStore.load();
-    els.warning.hidden = BattleStore.isPersistent();
+    els.warning.hidden = !storageIssues().length;
     resetForm();
     renderAll();
     announce();
@@ -365,6 +365,8 @@ window.addEventListener('genres:changed', () => { if (!editingId) renderThemeOpt
 
 // Used by Battle Night to read names and save a finished battle
 async function addBattle(entry) {
+    const existing = entry.id && log.battles.find(b => b.id === entry.id);
+    if (existing) return existing.id;
     const battle = { id: newId(), createdAt: Date.now(), notes: '', ...entry };
     log.battles.push(battle);
     await persist();

@@ -1,127 +1,103 @@
-/* ==========================================================================
-   BATTLE LOG STORAGE
-   Everything the Battle Log saves goes through this one object, so switching
-   storage later (e.g. to Firebase so both of you share one log) means
-   replacing only this file. Keep the same three functions:
+/* Browser storage with an in-memory copy and explicit failure reporting.
+   A failed write never discards the current session's work. Retry and Export
+   can use it even when the browser blocks storage or runs out of space. */
+import { normalizeGenres, normalizeLog, normalizeNight } from './data-validation.js';
 
-     await BattleStore.load()      -> the log object (or a fresh empty one)
-     await BattleStore.save(log)   -> true if it was saved
-     BattleStore.isPersistent()    -> false if this browser can't save
+const issues = new Map();
+const stores = [];
+const recovery = new Map();
+export const storageRecovery = () => Object.fromEntries(recovery);
+export const storageIssues = () => [...issues.values()];
+function report(key, message, retryable) {
+    if (message) issues.set(key, { key, message, retryable });
+    else issues.delete(key);
+    if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('storage:changed'));
+}
 
-   The log object looks like:
-     {
-       version: 1,
-       players: { a: 'Player 1', b: 'Player 2' },
-       lastTheme: 'Food from Another World',     // last theme the wheel picked
-       battles: [
-         { id, date: 'YYYY-MM-DD', theme, movieA, movieB,
-           winner: 'a' | 'b' | 'tie', notes, createdAt }
-       ]
-     }
-   ========================================================================== */
-const LOG_KEY = 'movieBattle.log.v1';
+function createStore(key, fresh, validate) {
+    let memory = fresh(), loaded = false, pending = null;
+    const store = {
+        async load() {
+            if (loaded) return memory;
+            loaded = true;
+            let raw = null;
+            try {
+                raw = localStorage.getItem(key);
+                if (raw !== null) {
+                    const result = validate(JSON.parse(raw));
+                    memory = result.value;
+                    if (result.warning) { recovery.set(key, raw); report(key, result.warning, false); }
+                }
+            } catch (error) {
+                if (raw !== null) recovery.set(key, raw);
+                report(key, 'Some saved data could not be read. Download a backup to preserve any recoverable data.', false);
+                console.warn('Saved data could not be read.', error);
+            }
+            return memory;
+        },
+        async save(value) {
+            memory = value;
+            loaded = true;
+            pending = 'save';
+            return store.retry();
+        },
+        async clear() {
+            memory = fresh();
+            loaded = true;
+            pending = 'clear';
+            return store.retry();
+        },
+        async retry() {
+            if (!pending) return true;
+            try {
+                if (pending === 'clear') localStorage.removeItem(key);
+                else localStorage.setItem(key, JSON.stringify(memory));
+                pending = null;
+                // A successful write does not dismiss a warning about a bad read.
+                if (issues.get(key)?.retryable) report(key, null);
+                return true;
+            } catch {
+                report(key, 'Changes aren’t saved. Keep this tab open and download a backup.', true);
+                return false;
+            }
+        },
+        isPersistent() { return !issues.get(key)?.retryable; }
+    };
+    stores.push(store);
+    return store;
+}
 
-function emptyLog() {
+export function emptyLog() {
     return { version: 1, players: { a: 'Player 1', b: 'Player 2' }, lastTheme: '', battles: [] };
 }
+export const BattleStore = createStore('movieBattle.log.v1', emptyLog, data => {
+    const { log, skipped } = normalizeLog(data);
+    return { value: log, warning: skipped ? `${skipped} invalid saved battle(s) were skipped. Export a backup of the recovered log.` : '' };
+});
+BattleStore.emptyLog = emptyLog;
 
-// Some browsers (private windows, strict settings) refuse to save
-let persistent = true;
-try {
-    const probe = LOG_KEY + '.probe';
-    localStorage.setItem(probe, '1');
-    localStorage.removeItem(probe);
-} catch (e) {
-    persistent = false;
+export const GenreStore = createStore('movieBattle.genres.v1', () => null, data => ({ value: normalizeGenres(data) }));
+export const NightStore = createStore('movieBattle.night.v1', () => null, data => ({ value: normalizeNight(data) }));
+
+export async function retrySaves() {
+    const results = await Promise.all(stores.map(store => store.retry()));
+    return results.every(Boolean);
 }
 
-let memoryCopy = emptyLog();          // used when the browser can't save
-
-export const BattleStore = {
-    emptyLog,
-
-    isPersistent() { return persistent; },
-
-    async load() {
-        if (!persistent) return memoryCopy;
-        try {
-            const raw = localStorage.getItem(LOG_KEY);
-            if (!raw) return emptyLog();
-            const log = JSON.parse(raw);
-            return { ...emptyLog(), ...log, players: { ...emptyLog().players, ...(log.players || {}) } };
-        } catch (e) {
-            console.warn('Battle log could not be read; starting fresh.', e);
-            return emptyLog();
-        }
-    },
-
-    async save(log) {
-        if (!persistent) { memoryCopy = log; return false; }
-        try {
-            localStorage.setItem(LOG_KEY, JSON.stringify(log));
-            return true;
-        } catch (e) {
-            console.warn('Battle log could not be saved.', e);
-            return false;
-        }
-    }
-};
-
-/* ==========================================================================
-   GENRE STORAGE
-   The genre list you edit in the app (Genre Editor). Same idea as BattleStore:
-   swap this out later to share genres between devices.
-
-     await GenreStore.load()   -> { genres: [{ id, title, label }], favorUnplayed } or null
-                                  (null = nothing saved yet; the app uses js/wheel/genres-and-colors.js)
-     await GenreStore.save(data)
-     await GenreStore.clear()  -> forget saved genres (back to js/wheel/genres-and-colors.js)
-   ========================================================================== */
-const GENRES_KEY = 'movieBattle.genres.v1';
-
-export const GenreStore = {
-    async load() {
-        try {
-            const raw = localStorage.getItem(GENRES_KEY);
-            if (!raw) return null;
-            const data = JSON.parse(raw);
-            if (!Array.isArray(data.genres)) return null;
-            return data;
-        } catch (e) {
-            return null;
-        }
-    },
-    async save(data) {
-        try { localStorage.setItem(GENRES_KEY, JSON.stringify(data)); return true; }
-        catch (e) { return false; }
-    },
-    async clear() {
-        try { localStorage.removeItem(GENRES_KEY); } catch (e) { /* nothing saved anyway */ }
-    }
-};
-
-/* ==========================================================================
-   BATTLE NIGHT STORAGE
-   The current battle night (schedule, picks, clues, judging). In this
-   prototype both players share one device. With Firebase, this becomes a
-   shared document, and security rules keep each player's pick sealed until
-   the reveal time.
-
-     await NightStore.load()   -> the battle night object, or null
-     await NightStore.save(night)
-     await NightStore.clear()
-   ========================================================================== */
-const NIGHT_KEY = 'movieBattle.night.v1';
-export const NightStore = {
-    async load() {
-        try { const raw = localStorage.getItem(NIGHT_KEY); return raw ? JSON.parse(raw) : null; }
-        catch (e) { return null; }
-    },
-    async save(night) {
-        try { localStorage.setItem(NIGHT_KEY, JSON.stringify(night)); return true; }
-        catch (e) { return false; }
-    },
-    async clear() {
-        try { localStorage.removeItem(NIGHT_KEY); } catch (e) { /* nothing to clear */ }
-    }
-};
+// Probe once, so a browser that blocks saving warns before the first edit.
+try {
+    const probe = 'movieBattle.storage.probe';
+    localStorage.setItem(probe, '1');
+    localStorage.removeItem(probe);
+} catch {
+    report('storage', 'This browser isn’t saving your data. Keep this tab open and download a backup.', true);
+}
+export async function retryStorage() {
+    const ok = await retrySaves();
+    try {
+        localStorage.setItem('movieBattle.storage.probe', '1');
+        localStorage.removeItem('movieBattle.storage.probe');
+        report('storage', null);
+    } catch { return false; }
+    return ok;
+}

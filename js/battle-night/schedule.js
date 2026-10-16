@@ -3,7 +3,7 @@ import { el, h } from '../core/page-elements.js';
 import { accept, downloadICS, propose } from './actions.js';
 import { render } from './page.js';
 import { effectiveReveal } from './rules.js';
-import { MIN, S, me, nameOf, now, them } from './shared-state.js';
+import { HOUR, MIN, S, me, nameOf, now, them } from './shared-state.js';
 import { defaultBattleTime, fmtClock, fmtLeft, fmtTime, toLocalInput } from './time-format.js';
 
 // ---------- Pieces ----------
@@ -28,6 +28,17 @@ function scheduleForm(defaultMs) {
     const radio = (value, label) => h('label', { class: 'night-radio' },
         h('input', { type: 'radio', name: 'deadline', value, checked: policy === value }), ' ', label);
     const error = h('p', { class: 'form-error', role: 'alert' });
+    const timingNote = h('p', { class: 'night-hint', role: 'status' });
+    const updateTiming = () => {
+        const quick = new Date(input.value).getTime() - now() <= HOUR;
+        timingNote.textContent = quick
+            ? 'Quick-start battle: reveal when both picks are locked. No clues or missed-pick forfeits.'
+            : 'Champions reveal one hour before the battle. The deadline rule below applies.';
+        const fieldset = form.querySelector('fieldset');
+        fieldset.disabled = quick;
+        fieldset.hidden = quick;
+    };
+    input.addEventListener('input', updateTiming);
     const form = h('form', {
         class: 'night-card night-form', novalidate: true, onsubmit: async e => {
             e.preventDefault();
@@ -39,25 +50,26 @@ function scheduleForm(defaultMs) {
         }
     },
         h('h3', {}, 'When is the battle?'),
-        h('label', { class: 'night-field' }, 'Date and time', input),
+        h('label', { class: 'night-field' }, 'Date and time', input), timingNote,
         h('fieldset', { class: 'night-fieldset' }, h('legend', {}, 'If someone hasn\u2019t picked a champion by the reveal'),
             radio('extend', 'Give them 30 more minutes, then it\u2019s a forfeit'),
             radio('forfeit', 'Instant forfeit. No mercy.')),
         error,
         h('button', { type: 'submit', class: 'night-btn primary' }, `Propose this time to ${nameOf(them())}`)
     );
+    updateTiming();
     return form;
 }
 
 export function renderSchedule(main) {
     const p = S.night.proposal;
     if (!p || S.ui.reproposing) {
-        main.append(h('p', { class: 'night-intro' }, `Pick a time for the battle and send it to ${nameOf(them())}. Champions are revealed one hour before it starts.`));
+        main.append(h('p', { class: 'night-intro' }, `Pick a time for the battle and send it to ${nameOf(them())}. Champions are revealed one hour before it starts, or when both picks are ready for a quick-start battle.`));
         main.append(scheduleForm(p ? p.at : defaultBattleTime()));
         if (S.ui.reproposing) main.append(h('button', { type: 'button', class: 'night-link', onclick: () => { S.ui.reproposing = false; render(); } }, 'Never mind'));
         return;
     }
-    const policyText = S.night.deadline === 'forfeit' ? 'a missed pick is an instant forfeit' : 'a missed pick gets 30 more minutes, then forfeits';
+    const policyText = p.at - now() <= HOUR ? 'quick-start: reveal when both picks are locked; no missed-pick forfeits' : S.night.deadline === 'forfeit' ? 'a missed pick is an instant forfeit' : 'a missed pick gets 30 more minutes, then forfeits';
     if (p.by === me()) {
         main.append(h('section', { class: 'night-card' },
             h('p', { class: 'night-kicker' }, 'Waiting for an answer'),
@@ -83,6 +95,8 @@ export function scheduleSummary() {
             h('p', { class: 'night-strong' }, fmtTime(S.night.battleAt))),
         h('div', {},
             h('p', { class: 'night-kicker' }, ext ? 'Reveal pushed back' : 'Champions revealed'),
-            h('p', { class: 'night-strong' }, fmtClock(effectiveReveal(S.night)), ' · ', countdownEl(effectiveReveal(S.night)))),
+            S.night.quickStart
+                ? h('p', { class: 'night-strong' }, 'When both picks are locked')
+                : h('p', { class: 'night-strong' }, fmtClock(effectiveReveal(S.night)), ' · ', countdownEl(effectiveReveal(S.night)))),
         h('button', { type: 'button', class: 'night-btn small', onclick: downloadICS }, 'Add to calendar'));
 }

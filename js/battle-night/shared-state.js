@@ -26,14 +26,21 @@ export const CATEGORIES = [
 // ---------- Prototype state (who you are, clock offset) ----------
 const PROTO_KEY = 'movieBattle.prototype.v1';
 export let proto = { offset: 0, viewAs: 'a', seen: {} };
-try { proto = { ...proto, ...JSON.parse(localStorage.getItem(PROTO_KEY) || '{}') }; } catch (e) { /* defaults */ }
+try {
+    const saved = JSON.parse(localStorage.getItem(PROTO_KEY) || '{}');
+    if (saved && typeof saved === 'object') {
+        if (Number.isFinite(saved.offset)) proto.offset = saved.offset;
+        if (['a', 'b'].includes(saved.viewAs)) proto.viewAs = saved.viewAs;
+        if (saved.seen && typeof saved.seen === 'object' && !Array.isArray(saved.seen)) proto.seen = saved.seen;
+    }
+} catch (e) { /* defaults */ }
 export const saveProto = () => { try { localStorage.setItem(PROTO_KEY, JSON.stringify(proto)); } catch (e) { /* not critical */ } };
 export const now = () => Date.now() + proto.offset;
 // Values that several Battle Night files change live on one shared object
 // (a module can read another module's variables, but not reassign them)
 export const S = {
     night: null,                                   // the current battle night (see NightStore)
-    ui: { reproposing: false, draftScores: {} }    // screen-only state: forms open, scores being entered
+    ui: { reproposing: false }    // screen-only state: forms open, scores being entered
 };
 
 export const me = () => proto.viewAs;
@@ -42,4 +49,4 @@ export const names = () => (BattleLog ? BattleLog.players() : { a: 'Player 1', b
 export const nameOf = side => names()[side];
 export const newId = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : `n${Date.now()}${Math.random().toString(36).slice(2, 7)}`;
 
-export async function save() { await NightStore.save(S.night); }
+export async function save() { return NightStore.save(S.night); }

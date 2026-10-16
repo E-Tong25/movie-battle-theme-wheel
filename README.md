@@ -70,8 +70,15 @@ At the end of the day, my ultimate goal, and what I believe the project's core i
    theme, and can drop up to three cryptic clues that unlock during the countdown.
 4. **The reveal.** An hour before the battle, both picks are revealed with a
    montage of stills from the two movies.
-5. **Watch and judge.** Score both movies in secret. The verdict goes into the
-   Battle Log, with the scoreboard and history.
+5. **Watch and judge.** Score both movies in secret. Each player has a separate
+   score draft that survives a refresh. The verdict goes into the Battle Log,
+   with the scoreboard and history.
+
+**Quick-start battles:** when a proposed time is accepted an hour or less before
+it starts, both players lock their picks and the reveal begins as soon as both
+are ready. Clues and missed-pick forfeits are off for that battle; judging opens
+at the scheduled start, once both picks are ready. Battles accepted further in
+advance keep the usual one-hour reveal and deadline rules.
 
 | Battle Night: the Countdown, Hidden Picks and Clues | The Reveal |
 |---|---|
@@ -240,8 +247,16 @@ scroll sideways after a spin.
 ### Saving and Sharing
 
 For now, everything is saved in the browser, so each device has its own data.
-Export and Import move the Battle Log (and genres) between devices, and a
-warning appears if a browser can't save at all. The shared version, planned with
+Export and Import move the Battle Log, genres, and active battle (including
+picks, clues and each player's draft scores) between devices. Backups contain
+both players' picks and scores, so keep them private until the reveal. The TMDB
+key is excluded. Import validates the whole file before applying it, skips
+invalid history records, and asks before replacing an unfinished battle. Older
+Battle Log backups still work.
+
+A persistent warning appears if a save fails. Current work stays in memory;
+keep the tab open, download a backup, or retry saving. Unreadable saved data is
+kept in the backup's `recovery` field for manual recovery. The shared version, planned with
 Firebase, will let both of us use our own phones with the same data. Saving was
 built behind a single layer from the start, so switching to shared storage
 means replacing one piece rather than rewriting the app.
@@ -317,6 +332,20 @@ fonts/                      the theme fonts and their licences
 libraries/                  the confetti library and its licence
 screenshots/                the pictures in this README
 ```
+
+## Reliability Checks
+
+No build step or packages are needed to run the app. The regression tests use
+Node.js 20+ and its built-in test runner:
+
+```sh
+node --experimental-vm-modules --test tests/reliability.test.mjs
+```
+
+These exercise the actual rules, scoring handlers, storage and import/export
+code with a small DOM adapter. They do not replace browser testing of layout,
+animations or device-specific behavior. See [RELIABILITY.md](RELIABILITY.md) for
+upgrade instructions and a manual test checklist.
 
 ## Third-Party Components
 

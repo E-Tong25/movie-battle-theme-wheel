@@ -47,10 +47,11 @@ export function render() {
     if (S.ui.posterSetup) main.append(posterSetupCard());
     if (ph === 'schedule') renderSchedule(main);
     if (ph === 'countdown') {
+        if (S.night.quickStart) main.append(h('p', { class: 'night-hint' }, 'Quick-start battle: champions reveal as soon as both picks are locked. Clues and missed-pick forfeits are off for this battle.'));
         if (S.night.extendedUntil) main.append(h('p', { class: 'night-warn' }, `Someone hasn\u2019t picked yet, so the reveal moved to ${fmtClock(S.night.extendedUntil)}. Miss this one and it\u2019s a forfeit.`));
         main.append(bigCountdown(S.night.battleAt, 'Until the battle'), scheduleSummary());
         renderChampions(main);
-        renderClues(main);
+        if (!S.night.quickStart) renderClues(main);
     }
     if (ph === 'same') renderSame(main);
     // Nothing about the picks is drawn until the reveal sequence has played: the page stays
@@ -62,7 +63,7 @@ export function render() {
             h('div', { class: 'night-center' }, h('button', { type: 'button', class: 'night-link', onclick: playRevealShow }, 'Replay the reveal')));
         renderWatchOrder(main);
         main.append(bigCountdown(S.night.battleAt, 'Until the battle'), scheduleSummary());
-        renderClueRecap(main);
+        if (!S.night.quickStart) renderClueRecap(main);
     }
     if (ph === 'judging' && !holdBack) { main.append(revealCards()); renderJudging(main); }
     if (ph === 'results') renderResults(main);
@@ -77,7 +78,7 @@ export function render() {
 function phaseKey() {
     if (!S.night) return 'none';
     const t = now();
-    const clues = S.night.status === 'scheduled' ? clueTimes(S.night).filter(at => t >= at).length : 0;
+    const clues = S.night.status === 'scheduled' && !S.night.quickStart ? clueTimes(S.night).filter(at => t >= at).length : 0;
     return [phase(), clues, locked('a'), locked('b'), !!S.night.extendedUntil, !!S.night.forfeit, S.night.same && S.night.same.loser, S.night.watchOrder,
             !!S.night.judging.a, !!S.night.judging.b, me(), S.night.status, S.night.proposal && S.night.proposal.by].join('|');
 }
@@ -168,6 +169,17 @@ if (scheduleBtn) scheduleBtn.addEventListener('click', async () => {
             }
         });
     }
+});
+
+// Backups restore a fully validated night and reset the prototype clock.
+window.addEventListener('night:restored', e => {
+    S.night = e.detail.night;
+    S.ui = { reproposing: false };
+    proto.offset = 0;
+    proto.seen = {};
+    saveProto();
+    if (isOpen()) render();
+    updateBenchButton();
 });
 
 // ---------- Start ----------

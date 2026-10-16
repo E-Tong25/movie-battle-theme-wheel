@@ -22,7 +22,7 @@ export function moviePicker(initialTitle, initialMovie, label) {
         chip.hidden = false;
         chip.append(posterEl(state.movie, state.movie.title, 'thumb'),
             h('span', {}, h('strong', {}, state.movie.title), state.movie.year ? ` (${state.movie.year})` : ''),
-            h('button', { type: 'button', class: 'night-link', onclick: () => { state.movie = null; showChip(); input.focus(); } }, 'Change'));
+            h('button', { type: 'button', class: 'night-link', onclick: () => { state.movie = null; showChip(); input.dispatchEvent(new Event('change')); input.focus(); } }, 'Change'));
     }
     function close() { list.hidden = true; input.setAttribute('aria-expanded', 'false'); active = -1; }
     function choose(m) {
@@ -30,6 +30,7 @@ export function moviePicker(initialTitle, initialMovie, label) {
         input.value = m.title;
         close();
         showChip();
+        input.dispatchEvent(new Event('change'));
     }
     function paint() {
         list.textContent = '';

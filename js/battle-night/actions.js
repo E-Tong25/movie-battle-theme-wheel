@@ -1,4 +1,5 @@
 /* Battle Night: proposing, accepting, coin flips, results and the calendar invite */
+import { emptyScores } from '../core/data-validation.js';
 import { el, h } from '../core/page-elements.js';
 import { BattleLog } from '../features/battle-log.js';
 import { Toast } from '../features/messages.js';
@@ -10,11 +11,12 @@ export async function startNight(theme) {
     S.night = {
         id: newId(), theme, status: 'proposed', createdAt: now(),
         proposal: null, battleAt: null, scheduledAt: null,
-        deadline: 'extend', extendedUntil: null, forfeit: null,
+        deadline: 'extend', quickStart: false, extendedUntil: null, forfeit: null,
         players: { a: { pick: '', movie: null, lockedAt: null, clues: ['', '', ''] }, b: { pick: '', movie: null, lockedAt: null, clues: ['', '', ''] } },
+        draftScores: { a: emptyScores(), b: emptyScores() },
         same: null, sameChecked: false, watchOrder: null, judging: { a: null, b: null }, loggedId: null
     };
-    S.ui = { reproposing: false, draftScores: {} };
+    S.ui = { reproposing: false };
     await save();
 }
 
@@ -35,6 +37,7 @@ export async function accept() {
     }
     S.night.battleAt = S.night.proposal.at;
     S.night.scheduledAt = now();
+    S.night.quickStart = S.night.battleAt - S.night.scheduledAt <= HOUR;
     S.night.status = 'scheduled';
     await save();
     render();
@@ -69,7 +72,7 @@ export function computeResults() {
 
 export async function logResult(entry) {
     if (!BattleLog) return;
-    S.night.loggedId = await BattleLog.addBattle(entry);
+    S.night.loggedId = await BattleLog.addBattle({ ...entry, id: `night:${S.night.id}` });
     S.night.status = 'done';
     await save();
     render();
@@ -79,13 +82,15 @@ export function downloadICS() {
     const stamp = ms => new Date(ms).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
     const esc = t => String(t).replace(/[\\,;]/g, m => '\\' + m).replace(/\n/g, '\\n');
     const n = names();
+    const revealText = S.night.quickStart ? 'Champions reveal when both picks are locked.' : 'Champions are revealed an hour before.';
     const ics = [
         'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Movie Battle//EN', 'BEGIN:VEVENT',
         `UID:${S.night.id}@movie-battle`, `DTSTAMP:${stamp(Date.now())}`,
         `DTSTART:${stamp(S.night.battleAt)}`, `DTEND:${stamp(S.night.battleAt + 4 * HOUR)}`,
         `SUMMARY:${esc(`Movie Battle: ${S.night.theme}`)}`,
-        `DESCRIPTION:${esc(`${n.a} vs ${n.b}. Champions are revealed an hour before. Two critics. One couch. Zero mercy.`)}`,
-        'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:Champions are revealed now!', 'TRIGGER:-PT1H', 'END:VALARM',
+        `DESCRIPTION:${esc(`${n.a} vs ${n.b}. ${revealText} Two critics. One couch. Zero mercy.`)}`,
+        'BEGIN:VALARM', 'ACTION:DISPLAY', S.night.quickStart ? 'DESCRIPTION:Movie Battle starts now!' : 'DESCRIPTION:Champions are revealed now!',
+        S.night.quickStart ? 'TRIGGER:PT0S' : 'TRIGGER:-PT1H', 'END:VALARM',
         'END:VEVENT', 'END:VCALENDAR'
     ].join('\r\n');
     const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));

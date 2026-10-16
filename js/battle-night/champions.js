@@ -3,8 +3,9 @@ import { h } from '../core/page-elements.js';
 import { coinFlip } from './actions.js';
 import { render } from './page.js';
 import { lockButton, moviePicker, posterEl } from './movie-picker.js';
-import { checkSame, locked, normalize } from './rules.js';
+import { checkSame, effectiveReveal, locked, normalize, resolveMoments } from './rules.js';
 import { S, me, nameOf, now, save, them } from './shared-state.js';
+import { fmtTime } from './time-format.js';
 
 export function renderChampions(main) {
     const mine = S.night.players[me()];
@@ -17,9 +18,17 @@ export function renderChampions(main) {
             h('button', { type: 'button', class: 'night-link', onclick: async () => { mine.lockedAt = null; await save(); render(); } }, 'Change my pick'));
     } else {
         const picker = moviePicker(mine.pick, mine.movie, 'Your champion movie');
-        picker.input.addEventListener('input', () => { mine.pick = picker.input.value; save(); });
+        picker.input.addEventListener('input', () => { mine.pick = picker.input.value; mine.movie = null; save(); });
+        picker.input.addEventListener('change', () => {
+            const selected = picker.get();
+            mine.pick = selected.title;
+            mine.movie = selected.movie;
+            save();
+        });
         const err = h('p', { class: 'form-error', role: 'alert' });
-        myCard.append(picker.el, err, lockButton(picker, err, async (title, movie) => {
+        myCard.append(h('p', { class: 'night-hint' }, S.night.quickStart ? 'Lock your pick when ready. The reveal waits for both players.' : `Pick deadline: ${fmtTime(effectiveReveal(S.night))}.`), picker.el, err, lockButton(picker, err, async (title, movie) => {
+            await resolveMoments();
+            if (S.night.forfeit) { render(); return; }
             mine.pick = title;
             mine.movie = movie;
             mine.lockedAt = now();

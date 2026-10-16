@@ -1,4 +1,5 @@
 /* Battle Night: judging, the verdict, forfeits, and the prototype bar */
+import { emptyScores, scoresComplete } from '../core/data-validation.js';
 import { h } from '../core/page-elements.js';
 import { NightStore } from '../core/saved-data.js';
 import { BattleLog } from '../features/battle-log.js';
@@ -19,15 +20,18 @@ export function renderJudging(main) {
             h('p', {}, S.night.judging[them()] ? '' : `Waiting for ${nameOf(them())} to finish judging. Their scores stay hidden until you\u2019ve both submitted.`)));
         return;
     }
-    const draft = S.ui.draftScores[S.night.id] || (S.ui.draftScores[S.night.id] = { a: {}, b: {} });
+    const night = S.night, judge = me();
+    night.draftScores ||= { a: emptyScores(), b: emptyScores() };
+    const draft = night.draftScores[judge] ||= emptyScores();
     const submit = h('button', { type: 'button', class: 'night-btn primary', disabled: true }, 'Submit my scores');
-    const complete = () => ['a', 'b'].every(m => CATEGORIES.every(c => draft[m][c.key]));
+    const complete = () => scoresComplete(draft);
     const cards = order.map(movie => {
         const rows = CATEGORIES.map(c => {
             const group = h('div', { class: 'score-buttons', role: 'radiogroup', 'aria-label': `${c.label} for ${S.night.players[movie].pick}` });
             for (let v = 1; v <= 5; v++) {
                 const b = h('button', { type: 'button', class: 'score-btn', role: 'radio', 'aria-checked': String(draft[movie][c.key] === v), onclick: () => {
                     draft[movie][c.key] = v;
+                    save();
                     group.querySelectorAll('.score-btn').forEach((x, i) => x.setAttribute('aria-checked', String(i + 1 === v)));
                     submit.disabled = !complete();
                 } }, String(v));
@@ -41,7 +45,9 @@ export function renderJudging(main) {
     });
     submit.disabled = !complete();
     submit.addEventListener('click', async () => {
-        S.night.judging[me()] = { scores: JSON.parse(JSON.stringify(draft)), at: now() };
+        if (S.night !== night || me() !== judge || night.judging[judge] || !complete()) return;
+        submit.disabled = true;
+        night.judging[judge] = { scores: JSON.parse(JSON.stringify(draft)), at: now() };
         await save();
         render();
     });
@@ -166,6 +172,6 @@ export function prototypeBar() {
             proto.offset ? h('button', { type: 'button', class: 'proto-btn', onclick: () => { proto.offset = 0; saveProto(); tick(true); } }, 'Back to now') : null),
         h('button', { type: 'button', class: 'proto-btn danger', onclick: async () => {
             if (!confirm('End this battle night? Its schedule, picks and clues will be cleared.')) return;
-            await NightStore.clear(); S.night = null; proto.offset = 0; saveProto(); close(); updateBenchButton();
+            S.night = null; await NightStore.clear(); proto.offset = 0; saveProto(); close(); updateBenchButton();
         } }, 'End battle night'));
 }

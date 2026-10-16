@@ -1,7 +1,7 @@
 /* Battle Night: the rules (reveal and clue times, locking in, the same-movie check, deadlines) */
 import { CLUES, EXTENSION, REVEAL_BEFORE, S, now, save } from './shared-state.js';
 
-const revealAt = n => n.battleAt - REVEAL_BEFORE;
+const revealAt = n => n.quickStart ? n.scheduledAt : n.battleAt - REVEAL_BEFORE;
 export const effectiveReveal = n => n.extendedUntil || revealAt(n);
 export function clueTimes(n) {
     const start = n.scheduledAt, end = revealAt(n);
@@ -43,11 +43,14 @@ export function phase() {
 export async function resolveMoments() {
     if (!S.night || S.night.status !== 'scheduled' || S.night.forfeit) return;
     const t = now();
+    if (S.night.quickStart) { await checkSame(); return; }
     if (t < effectiveReveal(S.night)) return;
     const missing = ['a', 'b'].filter(side => !locked(side));
     if (missing.length) {
-        if (S.night.deadline === 'extend' && !S.night.extendedUntil) S.night.extendedUntil = revealAt(S.night) + EXTENSION;
-        else S.night.forfeit = { missing };
+        if (S.night.deadline === 'extend' && !S.night.extendedUntil) {
+            S.night.extendedUntil = revealAt(S.night) + EXTENSION;
+        }
+        if (S.night.deadline === 'forfeit' || t >= S.night.extendedUntil) S.night.forfeit = { missing };
         await save();
         return;
     }

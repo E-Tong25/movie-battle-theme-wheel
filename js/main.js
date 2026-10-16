@@ -10,6 +10,7 @@
    The theme lighting (lighting/) is separate: plain scripts that only listen to
    the wheel's events.
    ========================================================================== */
+import './features/save-warning.js';
 import './wheel/controls-and-startup.js';
 import './features/battle-log.js';
 import './features/genre-editor.js';
