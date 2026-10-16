@@ -3,7 +3,7 @@ import { audioCtx, playTickSound } from '../core/sounds.js';
 import { renderBench, runtimeChoices } from './genre-pool.js';
 import { exclaim, openModal, setWinnerTitle } from './title-card.js';
 import { UI, announce, reducedMotion, state } from './shared-state.js';
-import { applyTheme, fireConfetti, playWinSound, soundKit, themePipeline } from './themes.js';
+import { applyTheme, fireConfetti, playWinSound, themePipeline } from './themes.js';
 
 let currentRotation = 0;
 export let isSpinning = false; // Stays true from the moment a spin starts until the result modal is closed
@@ -106,8 +106,6 @@ export function spin() {
     let lastShiftTime = startTime;
     window.wheelMotion.spinning = true;
     announce('spin');
-    const kit = soundKit();
-    if (kit && kit.spinStart) kit.spinStart(duration);
 
     // The wheel is rotated by this loop every frame (no CSS transition),
     // so the ticks, pointer bounce and theme shifts line up with what you see.
@@ -127,9 +125,7 @@ export function spin() {
             lastTargetIndex = segmentTrackIndex;
 
             // 1. Play audio click
-            const tickKit = soundKit();
-            if (tickKit && tickKit.tick) tickKit.tick();
-            else if (typeof playTickSound === 'function') playTickSound();
+            playTickSound();
 
             // 2. Show the full name of the slice passing under the pointer
             showPassing(segmentTrackIndex, timestamp);

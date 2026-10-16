@@ -124,7 +124,7 @@ function loadRevealSound() {                  // decoded once, then reused
 }
 // Plays the sound from `offset` seconds. Returns a clock (seconds into the sound) that the
 // montage follows, so the cuts stay locked to the audio. If sound can't play (not allowed
-// yet, or opened from files), a plain timer keeps the same timing silently.
+// yet), a plain timer keeps the same timing silently.
 async function playRevealSound(offset, delay = 0) {
     const buffer = await loadRevealSound();
     const ctx = sfxContext();

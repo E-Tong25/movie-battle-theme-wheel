@@ -146,7 +146,7 @@ h1 {
 
 .pointer.tick { transform: rotate(-22deg); }
 
-canvas {
+#wheel {   /* the wheel only (other canvases, like the confetti, stay unstyled) */
     border-radius: 50%;
     box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 0 4px #d4af37; /* Clean golden velvet framing ring */
 }

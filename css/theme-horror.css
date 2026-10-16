@@ -41,7 +41,7 @@ h1 {
 }
 .pointer.tick { transform: rotate(-25deg) scaleY(1.1); }
 
-canvas { border-radius: 50%; box-shadow: 0 0 30px #000, 0 0 15px #4a0000; border: 2px solid #800000; }
+#wheel {   /* the wheel only (other canvases, like the confetti, stay unstyled) */ border-radius: 50%; box-shadow: 0 0 30px #000, 0 0 15px #4a0000; border: 2px solid #800000; }
 
 button {
     background: #4a0000; color: #ff0000; border: 1px solid #800000; padding: 12px 50px;

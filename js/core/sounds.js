@@ -93,27 +93,6 @@ export function playSelectionSound(soundType) {
     }
 }
 
-
-/* ==========================================================================
-   SOUND KITS (optional) — PLACEHOLDER
-   A theme can use a "kit" to replace its tick, add a sound during the spin,
-   or replace its win sound. Pick one for a theme with `sound: 'name'` on its
-   entry in themePipeline (js/wheel/themes.js). No theme uses a kit right now.
-
-   TODO: Cinema ideas to find recordings for later
-     - spin:  a drumroll that lasts about 5 seconds (1.8s in Turbo)
-     - tick:  a film projector click
-     - win:   clapperboard snap + orchestral sting, or applause
-   (Free sources: Freesound.org with the CC0 license filter, Pixabay sounds)
-
-   Example kit using recordings (put the files in audio/):
-
-   const drumroll = new Audio('audio/cinema-drumroll.mp3');
-   soundKits.cinema = {
-       tick: () => playTickSound(),                        // or play a projector-click file
-       spinStart: (durationMs) => { drumroll.currentTime = 0; drumroll.play().catch(() => {}); },
-       win: () => { drumroll.pause(); new Audio('audio/cinema-win.mp3').play().catch(() => {}); },
-       stop: () => drumroll.pause()                         // called when the theme changes
-   };
-   ========================================================================== */
-export const soundKits = {};
+/* TODO, for later: Cinema could use its own recorded sounds (a drumroll during the
+   spin, a projector click for the tick). Free sources: Freesound.org (CC0 filter),
+   Pixabay sounds. */

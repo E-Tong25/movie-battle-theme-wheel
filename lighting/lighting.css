@@ -21,7 +21,7 @@ body.stage .stage-back {
     pointer-events: none;
 }
 
-/* Themes style every <canvas> (gold ring, green border, glow); layers shouldn't get it */
+/* Themes frame only the wheel (#wheel); this keeps the lighting layers plain regardless */
 body.stage canvas.stage-layer {
     box-shadow: none;
     border: 0;

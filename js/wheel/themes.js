@@ -1,5 +1,5 @@
 /* Wheel: the six themes, and switching between them */
-import { playSelectionSound, soundKits } from '../core/sounds.js';
+import { playSelectionSound } from '../core/sounds.js';
 import { drawWheel } from './drawing.js';
 import { arcadeOverdriveColors, cinemaColors, cyberpunkColors, fantasyColors, horrorColors, noirColors } from './genres-and-colors.js';
 import { UI, state } from './shared-state.js';
@@ -41,16 +41,8 @@ export function fireConfetti(options) {
     if (typeof confetti === 'function') confetti(options);
 }
 
-// Win sound: theme mp3 if it has one, otherwise the synth fanfare from js/core/sounds.js
-// The current theme's sound kit from js/core/sounds.js, if it has one
-export function soundKit() {
-    const name = themePipeline[state.currentThemeIndex]?.sound;
-    return (name && soundKits && soundKits[name]) || null;
-}
-
+// Win sound: the theme's mp3 if it has one, otherwise the synth fanfare from js/core/sounds.js
 export function playWinSound() {
-    const kit = soundKit();
-    if (kit && kit.win) { kit.win(); return; }
     const activeTheme = themePipeline[state.currentThemeIndex];
     const sound = activeTheme && winSounds[activeTheme.css];
     if (sound) {
@@ -74,8 +66,6 @@ export function preloadFonts() {
 
 // Activate the current theme's stylesheet (all are already loaded) and palette
 export function applyTheme() {
-    // Stop any sound that belongs to the theme we're leaving (e.g. Cinema's drumroll)
-    Object.values(soundKits || {}).forEach(kit => kit.stop && kit.stop());
     const activeTheme = themePipeline[state.currentThemeIndex];
     UI.themeSheets.forEach(sheet => {
         const file = sheet.getAttribute('href') || sheet.dataset.href;
@@ -102,10 +92,4 @@ export function buildThemeMenu() {
         state.currentThemeIndex = Number(UI.themeSelect.value);
         applyTheme();
     });
-}
-
-// Step to the next theme (kept for Shift Spin-style cycling and old links)
-function toggleGlobalTheme() {
-    state.currentThemeIndex = (state.currentThemeIndex + 1) % themePipeline.length;
-    applyTheme();
 }

@@ -38,7 +38,7 @@ h1 { color: #00ff00; text-align: center; font-size: 18px; line-height: 1.4; }
 }
 .pointer.tick { transform: scaleY(0.7) rotate(-10deg); }
 
-canvas { border-radius: 50%; border: 3px solid #00ff00; background: transparent; box-shadow: 0 0 20px rgba(0, 255, 0, 0.2); }
+#wheel {   /* the wheel only (other canvases, like the confetti, stay unstyled) */ border-radius: 50%; border: 3px solid #00ff00; background: transparent; box-shadow: 0 0 20px rgba(0, 255, 0, 0.2); }
 
 /* --- RETRO INTERACTION LAYERS --- */
 button {

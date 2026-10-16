@@ -212,11 +212,6 @@ body[data-theme="arcade"] .cd-num { font-size: clamp(20px, 5vw, 40px); }
 body[data-theme="arcade"] .reveal-title { font-size: clamp(13px, 2.4vw, 18px); line-height: 1.6; }
 .reveal-order { margin: 8px 0 0; font-size: 13px; color: var(--log-muted); }
 .reveal-vs { font-size: 22px; color: var(--log-muted); }
-.reveal-card.flip-in { animation: night-flip 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both; transform-origin: center; }
-@keyframes night-flip {
-    from { opacity: 0; transform: rotateY(90deg) scale(0.9); }
-    to   { opacity: 1; transform: none; }
-}
 
 .coin {                                       /* a drawn gold coin */
     display: inline-block;
@@ -292,7 +287,7 @@ body[data-theme="arcade"] .reveal-title { font-size: clamp(13px, 2.4vw, 18px); l
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .reveal-card.flip-in, .coin.flipping, .seal.is-sealed { animation: none; }
+    .coin.flipping, .seal.is-sealed { animation: none; }
     body.stage .modal-content .modal-link { animation: none; opacity: 0.85; }
 }
 
@@ -354,7 +349,6 @@ body[data-theme="arcade"] .pf-title { overflow-wrap: normal; word-break: normal;
 .locked-pick { display: flex; align-items: center; gap: 12px; }
 .locked-pick .night-big, .locked-pick .night-strong { margin: 0; }
 .pick-year { color: var(--log-muted); font-size: 0.75em; }
-.verdict-posters { display: flex; gap: 14px; justify-content: center; }
 .night-header-actions { display: flex; align-items: center; gap: 8px; }
 .poster-setup .setup-steps { margin: 0 0 12px; padding-left: 20px; }
 .poster-setup a { color: var(--log-accent); }

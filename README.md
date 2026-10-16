@@ -1,46 +1,48 @@
+![Movie Battle](screenshots/banner-cyberpunk.jpg)
+
 # Movie Battle
 
-**Two Critics. One Couch. No Mercy.**
+**Two Critics. One Couch. Zero Mercy.**
 
 A themed spinning wheel for movie battle nights. Spin for a genre, each pick a
 movie in secret, watch both back to back, and judge who wins. Every battle goes
 on a running scoreboard.
 
-## Project Origin Story
+![The six themes: Cyberpunk, Cinema, Noir, Arcade, Horror and Fantasy](screenshots/themes.jpg)
 
-This project began with my simple want...primal need... to battle my boyfriend in the most legal, ethical way possible, movies.
+## Contents
 
-Of course like any battle field, I wanted to approach it in the fairest, most open for creativity and grandiose way possible: themes!
+- [Background](#background)
+- [How a battle works](#how-a-battle-works)
+- [Opening the app](#opening-the-app)
+- [Movie posters (TMDB)](#movie-posters-tmdb)
+- [Customizing](#customizing)
+- [Built with](#built-with)
+- [Current status](#current-status)
+- [What's next](#whats-next)
+- [Challenges and decisions](#challenges-and-decisions)
+- [Where things are](#where-things-are)
+- [Third-party components](#third-party-components)
+- [Copyright](#copyright)
 
-I realized broad themes like *"Pick an Action movie!"* would leave both of us (critically indecisive and one undiagnosed ADHD persons) paralyzed.
+## Background
 
-Thus, my unconventional but true to my humor themes were born!
+Movie Battle started as a game between me and my partner. [How it began: for
+example, a disagreement over whose taste in movies was better, or a way to make
+picking a movie more fun.] The rules are simple:
+pick a theme, each choose the movie that fits it best, watch both back to back,
+and decide who wins.
 
-Our first Battle Night consisted of the theme of *"Story is Sound, and Music is Score."* Basically, a fancy way of saying **"Which movie has the best soundtrack."**
+The hard part was never the battle itself, it was getting started. Coming up
+with a theme on the spot was difficult, and the genre ideas that came up along
+the way kept getting lost. [Anything else that made it frustrating:
+for example, the same themes coming up again and again, or neither of us
+remembering who won last time.]
 
-Ironically, my boyfriend chose *The Grand Budapest Hotel* while I pulled out *La La Land*. Both incredible movies that the other person in the battle hadn't seen prior, so it was perfect!
-
-He interpreted the theme in a different way I did, which prompted great discussions after the film.
-
-For me, the success of this battle night left me yearning for more but in an even more "extra" way possible.
-
-What started out as the thought of "Who doesn't like spinning a wheel" rapidly snowballed into more and more ideas:
-- What if the wheel had different visual genres?
-- What if the user could not only select different wheel genres but could also have it flip through each of them as it spins?
-- What if I could effect the speed of the wheel so it could go "Turbo" speed?
-- What if I could add and remove themes directly in the app?
-- What if you can schedule time to battle out the theme with a second competitor?
-- What if you could secretly select your movie, set up clues that could be sent to the other person, building up to the day of the battle?
-- What if there was some sort of great reveal on the day of the battle?
-- What if there was some sort of scoring system that each player would fill out to determine the winner?
-- What if there was a scoreboard that kept track of previous battles and winners along with their selected movie?
-- What if this wasn't hosted on a local browser but an app?
-
-**My mom always said I ask too many questions.**
-
-At the end of the day, my ultimate goal, and what I believe the project's core is:
-
-*An intimate and personalized experience where two people can come together, battle it out, and create memories through the love of movies and good ol' fashion competition.*
+So I built a wheel to hold our list of custom genres and pick the theme for us.
+It grew from there: a scoreboard so the bragging rights are on record, secret
+picks and cryptic clues to build suspense, and a reveal worthy of the moment.
+What started as a way to pick tonight's theme became a whole battle night.
 
 ## How a battle works
 
@@ -52,6 +54,17 @@ At the end of the day, my ultimate goal, and what I believe the project's core i
    montage of stills from the two movies.
 5. **Watch and judge.** Score both movies in secret. The verdict goes into the
    Battle Log, with the scoreboard and history.
+
+| Battle Night: the countdown, sealed picks and clues | The reveal |
+|---|---|
+| ![Battle Night countdown](screenshots/battle-night.jpg) | ![The reveal](screenshots/reveal.jpg) |
+| **The verdict** | **The Battle Log** |
+| ![The verdict](screenshots/verdict.jpg) | ![The Battle Log](screenshots/battle-log.jpg) |
+
+<img src="screenshots/phone.jpg" alt="Movie Battle on a phone" width="260">
+
+*On a phone. The screenshots use the app's stand-in posters; with a TMDB key,
+real posters and movie stills appear instead.*
 
 ## Opening the app
 
@@ -93,6 +106,15 @@ it once on each device you use. Without a key, the app shows stand-in posters.
 | A theme's animated background | `lighting/<name>.js` |
 | Background music tracks | `audio/music/` (one per theme) |
 
+## Built with
+
+- **HTML, CSS and JavaScript modules**, with no framework, so the app is just
+  files a browser can run directly
+- **Canvas** for drawing the wheel and each theme's animated background
+- **The Web Audio API** for music, sound effects and the reveal's timing
+- **The TMDB API** for movie search, posters, stills and clue ideas
+- **canvas-confetti** for the celebrations
+
 ## Current status
 
 - **Each device keeps its own data** (Battle Log, genres, battle nights) until
@@ -101,6 +123,17 @@ it once on each device you use. Without a key, the app shows stand-in posters.
   between the two players and can skip ahead in time, for trying the whole flow.
   With the shared version, each phone becomes its own player and picks stay
   sealed until the reveal.
+
+## What's next
+
+1. **Hosting**, so the app has a real web address to open on any device.
+2. **Shared data with Firebase**, so both players use their own phones with the
+   same Battle Log and battle nights, and picks stay sealed on the server until
+   the reveal.
+3. **An installable version** that can be added to a phone's home screen and
+   works offline.
+4. **Messages and calendars**: battle invites sent through the phone's share
+   menu, reminders, and battle nights in Apple Calendar.
 
 ## Challenges and decisions
 
@@ -264,6 +297,7 @@ lighting/                   each theme's animated background
 audio/                      win sounds, the reveal sound, music/ per theme
 fonts/                      the theme fonts and their licences
 libraries/                  the confetti library and its licence
+screenshots/                the pictures in this README
 ```
 
 ## Third-party components

@@ -21,8 +21,9 @@ import { themePipeline } from '../wheel/themes.js';
    first click or tap anywhere (or on the Music button).
 
    On a hosted site, tracks play through the Web Audio mixer, which loops
-   without gaps and fades smoothly everywhere (including iPhones). Opened
-   straight from files, it falls back to a plain audio element.
+   without gaps and fades smoothly everywhere (including iPhones). If a track
+   can't be fetched that way (the single-file preview, for example), it falls
+   back to a plain audio element.
    ========================================================================== */
 const PREF_KEY = 'movieBattle.music';
 const MASTER = 0.55;            // overall music level (0..1), under the tick and win sounds
@@ -64,7 +65,7 @@ function loadBuffer(url) {
         buffers.set(url, fetch(url)
             .then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
             .then(data => new Promise((res, rej) => audio().decodeAudioData(data, res, rej)))
-            .catch(() => null));                      // e.g. opened from files: use the fallback
+            .catch(() => null));                      // can't be fetched (e.g. the single-file preview): use the fallback
     }
     return buffers.get(url);
 }
@@ -128,10 +129,8 @@ function wantedLevel() {
 let updating = Promise.resolve();
 function update() { updating = updating.then(apply).catch(() => {}); return updating; }
 
-let lastLevel = 0;
 async function apply() {
     const level = wantedLevel();
-    lastLevel = level;
     const url = level > 0 ? themeTrack() : '';
 
     if (!url) {                                        // silence: fade out whatever is playing
@@ -207,5 +206,3 @@ setTimeout(() => {
 }, 0);
 
 renderButton();
-export const Music = { update, isEnabled: () => enabled, isPlaying: () => !!current, track: () => currentUrl, level: () => (current ? lastLevel : 0),
-                 mode: () => (current && current.setLevel && currentUrl && buffers.has(currentUrl) ? 'checking' : 'none') };
