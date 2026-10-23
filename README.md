@@ -93,20 +93,55 @@ real posters and movie stills appear instead.*
 
 ## Opening the App
 
-Double-click **Open Movie Battle.command**. It starts a small local web server
-and opens the app in your browser; close its Terminal window to stop it.
+Run the app through a local web server so its JavaScript modules work correctly.
+Python 3 is required.
 
-- **First time only,** macOS may block it as being from an unidentified
-  developer. Allow it under **System Settings > Privacy & Security**
-  ("Open Anyway"), or on older macOS right-click it and choose **Open**.
-- It uses **Python 3**, part of Apple's free Command Line Tools (installed with
-  Git). If they're missing, macOS offers to install them, or run
-  `xcode-select --install`.
-- **Without the opener,** run `python3 -m http.server 8123 --bind 127.0.0.1` in
-  this folder, then open <http://localhost:8123>.
+### Running locally on macOS
 
-Double-clicking `index.html` shows a notice instead: browsers don't run
-JavaScript modules on pages opened straight from a file.
+1. Open **Terminal** (find it with Spotlight: Command + Space, then type Terminal).
+2. Type `bash` followed by a space. Do not press Return yet.
+3. Drag **Open Movie Battle.command** from Finder into the Terminal window.
+   Terminal fills in the file's path for you.
+4. Press **Return**.
+
+The launcher starts a local web server and opens Movie Battle in your browser.
+Keep Terminal open while using the app. The launcher chooses an available port,
+starting at 8123; its Terminal window shows the address it is using.
+
+You can also double-click **Open Movie Battle.command** if macOS allows it. If
+macOS blocks opening it that way, use the Terminal steps above.
+
+### Viewing changes
+
+Save your edited files, then refresh the browser with **Command + Shift + R**.
+You do not need to restart the server for changes to HTML, CSS, JavaScript or images.
+
+### Stopping the server
+
+Click the Terminal window running the server and press **Control + C**.
+
+### If the launcher does not work
+
+1. Open a new Terminal window.
+2. Type `cd` followed by a space. Do not press Return yet.
+3. Drag the **project folder containing index.html** into Terminal, then press
+   **Return**.
+4. Run:
+
+   ```bash
+   python3 -m http.server 8123 --bind 127.0.0.1
+   ```
+
+5. Open <http://127.0.0.1:8123> in your browser.
+
+If Terminal reports that the address is already in use, stop the earlier server
+with **Control + C**, or use port 8124 in both the command and browser address.
+
+If Python 3 is missing, install Apple's Command Line Tools by running
+`xcode-select --install` in Terminal, follow the installation prompts, then retry.
+
+Opening `index.html` directly shows a notice instead: browsers do not run the
+app's JavaScript modules on pages opened straight from a file.
 
 ## Movie posters (TMDB)
 
